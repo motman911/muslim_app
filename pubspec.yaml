@@ -1,0 +1,52 @@
+name: muslim_app
+description: تطبيق إسلامي شامل (قرآن، أذكار، مواقيت، قبلة، تقويم هجري)
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # أيقونات وخطوط
+  cupertino_icons: ^1.0.5
+  font_awesome_flutter: ^10.5.0
+
+  # إدارة الحالة
+  provider: ^6.1.1
+
+  # الموقع والقبلة
+  geolocator: ^13.0.4
+  flutter_qiblah: ^3.1.0+1
+  flutter_compass_v2: ^1.0.3
+
+  # القرآن والأذكار
+  http: ^1.5.0
+  intl: ^0.20.2
+
+  # التقويم الهجري
+  hijri: ^3.0.0
+
+  # إشعارات الأذان
+  flutter_local_notifications: ^19.4.2
+  shared_preferences: ^2.5.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  fonts:
+    - family: Lateef
+      fonts:
+        - asset: assets/fonts/Lateef-Regular.ttf
+    - family: Amiri
+      fonts:
+        - asset: assets/fonts/Amiri-Regular.ttf
+        - asset: assets/fonts/Amiri-Bold.ttf
+          weight: 700
