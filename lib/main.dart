@@ -44,18 +44,8 @@ class MainNavigationScreen extends StatefulWidget {
 
 class _MainNavigationScreenState extends State<MainNavigationScreen>
     with TickerProviderStateMixin {
-  int _currentIndex = 0;
-  late AnimationController _animationController;
   late Animation<double> _animation;
-
-  final List<Widget> _screens = const [
-    HomeScreen(),
-    QuranScreen(),
-    AdhkarScreen(),
-    AudioScreen(),
-    PrayerTimesScreen(),
-  ];
-
+  late AnimationController _animationController;
   final List<BottomNavigationBarItem> _bottomNavItems = const [
     BottomNavigationBarItem(
       icon: Icon(Icons.home_outlined),
@@ -84,6 +74,21 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
     ),
   ];
 
+  int _currentIndex = 0;
+  final List<Widget> _screens = const [
+    HomeScreen(),
+    QuranScreen(),
+    AdhkarScreen(),
+    AudioScreen(),
+    PrayerTimesScreen(),
+  ];
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -96,12 +101,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
       curve: Curves.easeInOut,
     );
     _animationController.forward();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
   }
 
   void _onItemTapped(int index) {

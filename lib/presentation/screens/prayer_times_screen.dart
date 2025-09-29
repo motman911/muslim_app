@@ -27,6 +27,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
   Future<void> _getLocationAndPrayerTimes() async {
     try {
       Position position = await Geolocator.getCurrentPosition(
+          // ignore: deprecated_member_use
           desiredAccuracy: LocationAccuracy.high);
 
       // لو عندك API لمواقيت الصلاة
@@ -52,6 +53,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
       setState(() {
         loading = false;
       });
+      // ignore: avoid_print
       print('Error fetching prayer times: $e');
     }
   }
