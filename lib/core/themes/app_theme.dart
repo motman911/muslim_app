@@ -3,67 +3,106 @@ import 'package:flutter/material.dart';
 import '../constants/color_scheme.dart';
 
 class AppTheme {
-  // 🌞 الوضع الفاتح
+  static const _radius = 16.0;
+
   static final ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
+    useMaterial3: true,
     primaryColor: AppColors.primaryGreen,
     scaffoldBackgroundColor: AppColors.backgroundLight,
+    colorScheme: const ColorScheme.light(
+      primary: AppColors.primaryGreen,
+      secondary: AppColors.secondaryYellow,
+      surface: Colors.white,
+    ),
+    fontFamily: 'Amiri',
     appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.primaryGreen,
-      foregroundColor: Colors.white,
+      backgroundColor: AppColors.backgroundLight,
+      foregroundColor: AppColors.primaryGreen,
       elevation: 0,
       centerTitle: true,
       titleTextStyle: TextStyle(
-        fontFamily: 'Lateef',
-        fontSize: 22,
+        fontFamily: 'Amiri',
+        fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Colors.white,
+        color: AppColors.primaryGreen,
       ),
     ),
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: AppColors.backgroundLight,
-      selectedItemColor: AppColors.primaryGreen,
-      unselectedItemColor: AppColors.textSecondary,
-      type: BottomNavigationBarType.fixed,
+    cardTheme: CardThemeData(
+      color: Colors.white,
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(_radius),
+      ),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: AppColors.backgroundGrey,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(_radius),
+        borderSide: BorderSide.none,
+      ),
+    ),
+    navigationBarTheme: const NavigationBarThemeData(
+      backgroundColor: Colors.white,
+      indicatorColor: Color(0x2252B788),
+      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: AppColors.primaryGreen,
+      backgroundColor: AppColors.accentGreen,
       foregroundColor: Colors.white,
     ),
     textTheme: const TextTheme(
-      bodyLarge: TextStyle(fontFamily: 'Amiri', color: AppColors.textPrimary),
-      bodyMedium:
-          TextStyle(fontFamily: 'Amiri', color: AppColors.textSecondary),
-      titleLarge: TextStyle(
-          fontFamily: 'Lateef', fontSize: 20, fontWeight: FontWeight.bold),
+      titleLarge: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+      bodyLarge: TextStyle(fontSize: 18),
     ),
   );
 
-  // 🌙 الوضع الداكن
   static final ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
+    useMaterial3: true,
     primaryColor: AppColors.primaryGreen,
     scaffoldBackgroundColor: AppColors.darkBackground,
+    colorScheme: const ColorScheme.dark(
+      primary: AppColors.accentGreen,
+      secondary: AppColors.secondaryYellow,
+      surface: AppColors.darkSurface,
+    ),
+    fontFamily: 'Amiri',
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.darkSurface,
       foregroundColor: AppColors.darkTextPrimary,
       elevation: 0,
       centerTitle: true,
       titleTextStyle: TextStyle(
-        fontFamily: 'Lateef',
-        fontSize: 22,
+        fontFamily: 'Amiri',
+        fontSize: 24,
         fontWeight: FontWeight.bold,
         color: AppColors.darkTextPrimary,
       ),
     ),
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+    cardTheme: CardThemeData(
+      color: AppColors.darkSurface,
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(_radius),
+      ),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: const Color(0xFF13271B),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(_radius),
+        borderSide: BorderSide.none,
+      ),
+    ),
+    navigationBarTheme: const NavigationBarThemeData(
       backgroundColor: AppColors.darkSurface,
-      selectedItemColor: AppColors.primaryGreen,
-      unselectedItemColor: AppColors.darkTextSecondary,
-      type: BottomNavigationBarType.fixed,
+      indicatorColor: Color(0x334CAF50),
+      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: AppColors.primaryGreen,
+      backgroundColor: AppColors.accentGreen,
       foregroundColor: Colors.white,
     ),
     textTheme: const TextTheme(
@@ -72,7 +111,7 @@ class AppTheme {
       bodyMedium:
           TextStyle(fontFamily: 'Amiri', color: AppColors.darkTextSecondary),
       titleLarge: TextStyle(
-          fontFamily: 'Lateef', fontSize: 20, fontWeight: FontWeight.bold),
+          fontFamily: 'Amiri', fontSize: 22, fontWeight: FontWeight.bold),
     ),
   );
 }

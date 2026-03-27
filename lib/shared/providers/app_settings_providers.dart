@@ -1,0 +1,98 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
+  throw UnimplementedError('SharedPreferences override is required in main().');
+});
+
+final initialThemeModeProvider = Provider<ThemeMode>((ref) => ThemeMode.system);
+final initialLocaleProvider = Provider<Locale>((ref) => const Locale('ar'));
+final initialOnboardingSeenProvider = Provider<bool>((ref) => false);
+
+final themeModeControllerProvider =
+    StateNotifierProvider<ThemeModeController, ThemeMode>(
+  (ref) => ThemeModeController(
+    prefs: ref.watch(sharedPreferencesProvider),
+    initialMode: ref.watch(initialThemeModeProvider),
+  ),
+);
+
+final localeControllerProvider =
+    StateNotifierProvider<LocaleController, Locale>(
+  (ref) => LocaleController(
+    prefs: ref.watch(sharedPreferencesProvider),
+    initialLocale: ref.watch(initialLocaleProvider),
+  ),
+);
+
+final onboardingControllerProvider =
+    StateNotifierProvider<OnboardingController, bool>(
+  (ref) => OnboardingController(
+    prefs: ref.watch(sharedPreferencesProvider),
+    initialSeen: ref.watch(initialOnboardingSeenProvider),
+  ),
+);
+
+class ThemeModeController extends StateNotifier<ThemeMode> {
+  ThemeModeController(
+      {required SharedPreferences prefs, required ThemeMode initialMode})
+      : _prefs = prefs,
+        super(initialMode);
+
+  static const storageKey = 'app_theme_mode';
+  final SharedPreferences _prefs;
+
+  static ThemeMode fromStorage(String? value) {
+    switch (value) {
+      case 'light':
+        return ThemeMode.light;
+      case 'dark':
+        return ThemeMode.dark;
+      default:
+        return ThemeMode.system;
+    }
+  }
+
+  Future<void> setThemeMode(ThemeMode mode) async {
+    state = mode;
+    await _prefs.setString(storageKey, mode.name);
+  }
+}
+
+class LocaleController extends StateNotifier<Locale> {
+  LocaleController(
+      {required SharedPreferences prefs, required Locale initialLocale})
+      : _prefs = prefs,
+        super(initialLocale);
+
+  static const storageKey = 'app_locale_code';
+  final SharedPreferences _prefs;
+
+  static Locale fromStorage(String? code) {
+    if (code == 'en' || code == 'fr' || code == 'ar') {
+      return Locale(code!);
+    }
+    return const Locale('ar');
+  }
+
+  Future<void> setLocale(Locale locale) async {
+    state = locale;
+    await _prefs.setString(storageKey, locale.languageCode);
+  }
+}
+
+class OnboardingController extends StateNotifier<bool> {
+  OnboardingController(
+      {required SharedPreferences prefs, required bool initialSeen})
+      : _prefs = prefs,
+        super(initialSeen);
+
+  static const storageKey = 'onboarding_seen';
+  final SharedPreferences _prefs;
+
+  Future<void> complete() async {
+    state = true;
+    await _prefs.setBool(storageKey, true);
+  }
+}

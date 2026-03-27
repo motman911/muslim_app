@@ -9,13 +9,23 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   # أيقونات وخطوط
   cupertino_icons: ^1.0.5
   font_awesome_flutter: ^10.5.0
 
   # إدارة الحالة
+  flutter_riverpod: ^2.6.1
   provider: ^6.1.1
+
+  # التنقل
+  go_router: ^14.8.1
+
+  # التخزين المحلي
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
 
   # الموقع والقبلة
   geolocator: ^13.0.4
@@ -40,6 +50,10 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/quran/
+    - assets/azkar/
 
   fonts:
     - family: Lateef

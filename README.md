@@ -1,16 +1,27 @@
-# muslim_app_new
+# Noor (نور) - Islamic Flutter App
 
-A new Flutter project.
+Noor is an offline-first Islamic app scaffold built with Flutter and clean architecture.
 
-## Getting Started
+## Implemented in this iteration
 
-This project is a starting point for a Flutter application.
+- Riverpod state management baseline.
+- GoRouter app shell with 5 tabs: Quran, Prayer Times, Azkar, Qibla, Settings.
+- Onboarding with first-run state persistence.
+- Localization support for Arabic, English, and French.
+- Theme mode persistence (system/light/dark).
+- Quran feature using clean architecture and offline asset loading.
+- Azkar feature using clean architecture, offline asset loading, and tasbeeh counter with haptic feedback.
+- Prayer times feature baseline (local mocked calculation structure ready for Adhan integration).
 
-A few resources to get you started if this is your first Flutter project:
+## Project directions
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Keep feature-first clean architecture (`data`, `domain`, `presentation`).
+- Add remote APIs progressively while preserving offline fallback.
+- Add Hive/Drift and background jobs in next phase.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Run
+
+```bash
+flutter pub get
+flutter run
+```
