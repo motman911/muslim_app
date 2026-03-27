@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../shared/providers/firebase_providers.dart';
@@ -20,6 +21,12 @@ class QuranPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.tr('quran')),
+        actions: [
+          IconButton(
+            onPressed: () => context.push('/bookmarks'),
+            icon: const Icon(Icons.bookmarks_rounded),
+          ),
+        ],
       ),
       body: Column(
         children: [

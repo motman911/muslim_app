@@ -60,6 +60,11 @@ class AppLocalizations {
       'email': 'البريد الإلكتروني',
       'password': 'كلمة المرور',
       'bookmarkSaved': 'تم حفظ الإشارة المرجعية',
+      'bookmarks': 'الإشارات المرجعية',
+      'noBookmarks': 'لا توجد إشارات مرجعية بعد',
+      'bookmarkDeleted': 'تم حذف الإشارة المرجعية',
+      'surah': 'السورة',
+      'ayah': 'الآية',
     },
     'en': {
       'appName': 'Noor',
@@ -100,6 +105,11 @@ class AppLocalizations {
       'email': 'Email',
       'password': 'Password',
       'bookmarkSaved': 'Bookmark saved',
+      'bookmarks': 'Bookmarks',
+      'noBookmarks': 'No bookmarks yet',
+      'bookmarkDeleted': 'Bookmark deleted',
+      'surah': 'Surah',
+      'ayah': 'Ayah',
     },
     'fr': {
       'appName': 'Noor',
@@ -141,6 +151,11 @@ class AppLocalizations {
       'email': 'Email',
       'password': 'Mot de passe',
       'bookmarkSaved': 'Signet enregistre',
+      'bookmarks': 'Signets',
+      'noBookmarks': 'Aucun signet pour le moment',
+      'bookmarkDeleted': 'Signet supprime',
+      'surah': 'Sourate',
+      'ayah': 'Verset',
     },
   };
 

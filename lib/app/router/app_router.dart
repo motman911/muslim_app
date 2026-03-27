@@ -5,6 +5,7 @@ import '../../features/azkar/presentation/pages/azkar_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../features/prayer_times/presentation/pages/prayer_times_page.dart';
 import '../../features/qibla/presentation/pages/qibla_page.dart';
+import '../../features/quran/presentation/pages/bookmarks_page.dart';
 import '../../features/quran/presentation/pages/quran_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../shared/providers/app_settings_providers.dart';
@@ -27,6 +28,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: '/quran',
             pageBuilder: (context, state) => const NoTransitionPage(
               child: QuranPage(),
+            ),
+          ),
+          GoRoute(
+            path: '/bookmarks',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: BookmarksPage(),
             ),
           ),
           GoRoute(

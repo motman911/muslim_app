@@ -43,6 +43,27 @@ class BookmarkSyncService {
         .limit(100)
         .get();
 
-    return snapshot.docs.map((doc) => doc.data()).toList();
+    return snapshot.docs
+        .map(
+          (doc) => {
+            'id': doc.id,
+            ...doc.data(),
+          },
+        )
+        .toList();
+  }
+
+  Future<void> removeBookmark(String bookmarkId) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      return;
+    }
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('bookmarks')
+        .doc(bookmarkId)
+        .delete();
   }
 }
