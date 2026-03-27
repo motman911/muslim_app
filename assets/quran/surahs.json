@@ -1,0 +1,74 @@
+{
+  "surahs": [
+    {
+      "id": 1,
+      "arabic_name": "الفاتحة",
+      "english_name": "Al-Fatihah",
+      "revelation_type": "makki",
+      "ayah_count": 7
+    },
+    {
+      "id": 2,
+      "arabic_name": "البقرة",
+      "english_name": "Al-Baqarah",
+      "revelation_type": "madani",
+      "ayah_count": 286
+    },
+    {
+      "id": 3,
+      "arabic_name": "آل عمران",
+      "english_name": "Aal-E-Imran",
+      "revelation_type": "madani",
+      "ayah_count": 200
+    },
+    {
+      "id": 4,
+      "arabic_name": "النساء",
+      "english_name": "An-Nisa",
+      "revelation_type": "madani",
+      "ayah_count": 176
+    },
+    {
+      "id": 5,
+      "arabic_name": "المائدة",
+      "english_name": "Al-Ma'idah",
+      "revelation_type": "madani",
+      "ayah_count": 120
+    },
+    {
+      "id": 6,
+      "arabic_name": "الأنعام",
+      "english_name": "Al-An'am",
+      "revelation_type": "makki",
+      "ayah_count": 165
+    },
+    {
+      "id": 7,
+      "arabic_name": "الأعراف",
+      "english_name": "Al-A'raf",
+      "revelation_type": "makki",
+      "ayah_count": 206
+    },
+    {
+      "id": 8,
+      "arabic_name": "الأنفال",
+      "english_name": "Al-Anfal",
+      "revelation_type": "madani",
+      "ayah_count": 75
+    },
+    {
+      "id": 9,
+      "arabic_name": "التوبة",
+      "english_name": "At-Tawbah",
+      "revelation_type": "madani",
+      "ayah_count": 129
+    },
+    {
+      "id": 10,
+      "arabic_name": "يونس",
+      "english_name": "Yunus",
+      "revelation_type": "makki",
+      "ayah_count": 109
+    }
+  ]
+}
