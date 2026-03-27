@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../services/audio_service.dart';
+import '../../../../services/reading_progress_sync_service.dart';
 import '../../data/datasources/quran_local_data_source.dart';
 import '../../data/repositories/quran_repository_impl.dart';
 import '../../domain/entities/surah_entity.dart';
@@ -131,3 +132,7 @@ final quranAudioControllerProvider =
     StateNotifierProvider<QuranAudioController, QuranAudioState>((ref) {
   return QuranAudioController(ref.watch(quranAudioServiceProvider));
 });
+
+final readingProgressSyncServiceProvider = Provider<ReadingProgressSyncService>(
+  (ref) => ReadingProgressSyncService(),
+);

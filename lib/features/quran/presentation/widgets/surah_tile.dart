@@ -7,6 +7,7 @@ class SurahTile extends StatelessWidget {
     super.key,
     required this.surah,
     required this.onPlayPressed,
+    required this.onTap,
     required this.isCurrent,
     required this.isPlaying,
     required this.isLoading,
@@ -14,6 +15,7 @@ class SurahTile extends StatelessWidget {
 
   final SurahEntity surah;
   final VoidCallback onPlayPressed;
+  final VoidCallback onTap;
   final bool isCurrent;
   final bool isPlaying;
   final bool isLoading;
@@ -24,6 +26,7 @@ class SurahTile extends StatelessWidget {
 
     return Card(
       child: ListTile(
+        onTap: onTap,
         leading: CircleAvatar(
           child: Text(surah.id.toString()),
         ),

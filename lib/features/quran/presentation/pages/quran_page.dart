@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/localization/app_localizations.dart';
+import '../../../../shared/providers/firebase_providers.dart';
 import '../providers/quran_providers.dart';
 import '../widgets/surah_tile.dart';
 
@@ -13,6 +14,8 @@ class QuranPage extends ConsumerWidget {
     final l10n = context.l10n;
     final surahsAsync = ref.watch(filteredSurahsProvider);
     final audioState = ref.watch(quranAudioControllerProvider);
+    final firebaseReady = ref.watch(firebaseReadyProvider);
+    final deviceId = ref.watch(deviceIdProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -58,6 +61,21 @@ class QuranPage extends ConsumerWidget {
 
                     return SurahTile(
                       surah: surah,
+                      onTap: () async {
+                        if (!firebaseReady || deviceId == null) {
+                          return;
+                        }
+
+                        await ref
+                            .read(readingProgressSyncServiceProvider)
+                            .syncLastRead(
+                              surahNumber: surah.id,
+                              ayahNumber: 1,
+                              pageNumber: 1,
+                              juzNumber: 1,
+                              deviceId: deviceId,
+                            );
+                      },
                       isCurrent: isCurrent,
                       isPlaying: audioState.isPlaying,
                       isLoading: audioState.isLoading,
