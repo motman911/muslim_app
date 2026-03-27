@@ -1,0 +1,87 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuthed() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthed() && request.auth.uid == userId;
+    }
+
+    function groupDoc(groupId) {
+      return get(/databases/$(database)/documents/groups/$(groupId));
+    }
+
+    function isGroupMember(groupId) {
+      return isAuthed() && request.auth.uid in groupDoc(groupId).data.members;
+    }
+
+    function isGroupAdmin(groupId) {
+      return isAuthed() && request.auth.uid == groupDoc(groupId).data.adminId;
+    }
+
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+
+      match /reading_progress/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /bookmarks/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /favorites/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /listening_history/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /memorization/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /achievements/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    match /fcm_tokens/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /groups/{groupId} {
+      allow create: if isAuthed()
+        && request.resource.data.adminId == request.auth.uid
+        && request.resource.data.members is list
+        && request.auth.uid in request.resource.data.members
+        && request.resource.data.maxMembers <= 50;
+
+      allow read: if isGroupMember(groupId);
+      allow update, delete: if isGroupAdmin(groupId);
+
+      match /members/{memberId} {
+        allow read: if isGroupMember(groupId);
+        allow create, update: if (isGroupAdmin(groupId) || request.auth.uid == memberId)
+          && request.resource.data.role in ['admin', 'member'];
+        allow delete: if isGroupAdmin(groupId) || request.auth.uid == memberId;
+      }
+
+      match /messages/{messageId} {
+        allow read: if isGroupMember(groupId);
+        allow create: if isGroupMember(groupId)
+          && request.resource.data.senderId == request.auth.uid
+          && request.resource.data.type in ['text', 'achievement', 'system'];
+        allow update, delete: if false;
+      }
+    }
+
+    match /challenges/{challengeId} {
+      allow read: if isAuthed();
+      allow write: if false;
+    }
+  }
+}
