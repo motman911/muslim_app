@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "noor-islamic-app"
-  }
+    "default": "noor-islamic-app-911"
+  },
+  "targets": {},
+  "etags": {}
 }

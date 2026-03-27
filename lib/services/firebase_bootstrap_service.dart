@@ -5,6 +5,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../firebase_options.dart';
+
 class FirebaseBootstrapResult {
   const FirebaseBootstrapResult({
     required this.isReady,
@@ -24,7 +26,11 @@ class FirebaseBootstrapService {
     final deviceId = _resolveDeviceId(prefs);
 
     try {
-      await Firebase.initializeApp();
+      if (Firebase.apps.isEmpty) {
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+      }
 
       final auth = FirebaseAuth.instance;
       if (auth.currentUser == null) {

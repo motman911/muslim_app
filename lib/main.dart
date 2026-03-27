@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app/app.dart';
+import 'firebase_options.dart';
 import 'services/firebase_bootstrap_service.dart';
 import 'shared/providers/app_settings_providers.dart';
 import 'shared/providers/firebase_providers.dart';
@@ -13,7 +14,11 @@ import 'shared/providers/firebase_providers.dart';
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   try {
-    await Firebase.initializeApp();
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    }
   } catch (_) {
     // Ignore bootstrap failures in background isolate.
   }
