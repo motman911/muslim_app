@@ -37,6 +37,15 @@ dependencies:
   intl: ^0.20.2
   just_audio: ^0.10.5
 
+  # Firebase integration
+  firebase_core: ^3.15.2
+  firebase_auth: ^5.6.2
+  cloud_firestore: ^5.6.11
+  firebase_messaging: ^15.2.10
+  firebase_analytics: ^11.5.2
+  firebase_remote_config: ^5.4.7
+  firebase_app_check: ^0.3.2+10
+
   # التقويم الهجري
   hijri: ^3.0.0
 
