@@ -1,5 +1,13 @@
 {
   "dart.flutterHotReloadOnSave": "all",
   "dart.openDevTools": "flutter",
-  "dart.previewFlutterUiGuides": true
+  "dart.previewFlutterUiGuides": true,
+  "dart.flutterRunAdditionalArgs": [
+    "-d",
+    "emulator-5554"
+  ],
+  "code-runner.runInTerminal": true,
+  "code-runner.executorMapByFileExtension": {
+    ".dart": "flutter run -d emulator-5554"
+  }
 }
