@@ -1,0 +1,5 @@
+{
+  "dart.flutterHotReloadOnSave": "all",
+  "dart.openDevTools": "flutter",
+  "dart.previewFlutterUiGuides": true
+}
