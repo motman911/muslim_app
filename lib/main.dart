@@ -1,14 +1,27 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app/app.dart';
 import 'services/firebase_bootstrap_service.dart';
+import 'services/firebase_messaging_service.dart';
 import 'shared/providers/app_settings_providers.dart';
 import 'shared/providers/firebase_providers.dart';
 
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  try {
+    await Firebase.initializeApp();
+  } catch (_) {
+    // Ignore bootstrap failures in background isolate.
+  }
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   final prefs = await SharedPreferences.getInstance();
 
   final themeRaw = prefs.getString(ThemeModeController.storageKey);
@@ -16,6 +29,7 @@ Future<void> main() async {
   final onboardingSeen =
       prefs.getBool(OnboardingController.storageKey) ?? false;
   final firebaseBootstrap = await FirebaseBootstrapService().initialize(prefs);
+  FirebaseMessagingService().setupForegroundHandlers();
 
   runApp(
     ProviderScope(

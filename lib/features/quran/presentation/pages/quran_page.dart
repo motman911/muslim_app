@@ -76,6 +76,23 @@ class QuranPage extends ConsumerWidget {
                               deviceId: deviceId,
                             );
                       },
+                      onLongPress: () async {
+                        if (!firebaseReady) {
+                          return;
+                        }
+
+                        await ref.read(bookmarkSyncServiceProvider).addBookmark(
+                              type: 'ayah',
+                              surahNumber: surah.id,
+                              ayahNumber: 1,
+                            );
+
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(l10n.tr('bookmarkSaved'))),
+                          );
+                        }
+                      },
                       isCurrent: isCurrent,
                       isPlaying: audioState.isPlaying,
                       isLoading: audioState.isLoading,
