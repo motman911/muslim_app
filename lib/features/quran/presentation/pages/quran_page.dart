@@ -12,6 +12,7 @@ class QuranPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final surahsAsync = ref.watch(filteredSurahsProvider);
+    final audioState = ref.watch(quranAudioControllerProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -52,7 +53,20 @@ class QuranPage extends ConsumerWidget {
                 return ListView.builder(
                   itemCount: surahs.length,
                   itemBuilder: (context, index) {
-                    return SurahTile(surah: surahs[index]);
+                    final surah = surahs[index];
+                    final isCurrent = audioState.currentSurahId == surah.id;
+
+                    return SurahTile(
+                      surah: surah,
+                      isCurrent: isCurrent,
+                      isPlaying: audioState.isPlaying,
+                      isLoading: audioState.isLoading,
+                      onPlayPressed: () {
+                        ref
+                            .read(quranAudioControllerProvider.notifier)
+                            .toggleSurah(surah);
+                      },
+                    );
                   },
                 );
               },
@@ -61,6 +75,40 @@ class QuranPage extends ConsumerWidget {
               loading: () => const Center(child: CircularProgressIndicator()),
             ),
           ),
+          if (audioState.currentSurahId != null)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.graphic_eq_rounded),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '${l10n.tr('nowPlaying')}: ${audioState.currentSurahName ?? ''}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      ref.read(quranAudioControllerProvider.notifier).stop();
+                    },
+                    icon: const Icon(Icons.stop_circle_rounded),
+                  ),
+                ],
+              ),
+            ),
+          if (audioState.errorMessage != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                l10n.tr('audioError'),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
+            ),
         ],
       ),
     );

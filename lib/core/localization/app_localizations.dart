@@ -47,6 +47,8 @@ class AppLocalizations {
       'noRemainingPrayer': 'لا توجد صلاة متبقية اليوم',
       'qiblaHint': 'ضع الهاتف على سطح مستوٍ لمعايرة اتجاه القبلة.',
       'offlineReady': 'جاهز للعمل بدون إنترنت',
+      'nowPlaying': 'قيد التشغيل',
+      'audioError': 'تعذر تشغيل التلاوة. تحقق من اتصال الإنترنت.',
     },
     'en': {
       'appName': 'Noor',
@@ -74,6 +76,8 @@ class AppLocalizations {
       'qiblaHint':
           'Place your phone on a flat surface to calibrate Qibla direction.',
       'offlineReady': 'Offline ready',
+      'nowPlaying': 'Now playing',
+      'audioError': 'Unable to play recitation. Check internet connection.',
     },
     'fr': {
       'appName': 'Noor',
@@ -101,6 +105,9 @@ class AppLocalizations {
       'qiblaHint':
           'Posez le telephone sur une surface plane pour calibrer la direction Qibla.',
       'offlineReady': 'Pret hors ligne',
+      'nowPlaying': 'Lecture en cours',
+      'audioError':
+          'Impossible de lire la recitation. Verifiez la connexion internet.',
     },
   };
 
