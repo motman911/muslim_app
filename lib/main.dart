@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app/app.dart';
 import 'services/firebase_bootstrap_service.dart';
-import 'services/firebase_messaging_service.dart';
 import 'shared/providers/app_settings_providers.dart';
 import 'shared/providers/firebase_providers.dart';
 
@@ -36,9 +35,6 @@ Future<void> main() async {
   final onboardingSeen =
       prefs.getBool(OnboardingController.storageKey) ?? false;
   final firebaseBootstrap = await FirebaseBootstrapService().initialize(prefs);
-  if (isMobilePlatform) {
-    FirebaseMessagingService().setupForegroundHandlers();
-  }
 
   runApp(
     ProviderScope(
