@@ -38,6 +38,8 @@ Future<void> main() async {
   final themeRaw = prefs.getString(ThemeModeController.storageKey);
   final localeRaw = prefs.getString(LocaleController.storageKey);
   final textScaleRaw = prefs.getDouble(TextScaleController.storageKey);
+  final lineHeightRaw = prefs.getDouble(LineHeightController.storageKey);
+  final highContrastRaw = prefs.getBool(HighContrastController.storageKey);
   final onboardingSeen =
       prefs.getBool(OnboardingController.storageKey) ?? false;
   final firebaseBootstrap = await FirebaseBootstrapService().initialize(prefs);
@@ -54,6 +56,12 @@ Future<void> main() async {
         ),
         initialTextScaleProvider.overrideWithValue(
           TextScaleController.fromStorage(textScaleRaw),
+        ),
+        initialLineHeightProvider.overrideWithValue(
+          LineHeightController.fromStorage(lineHeightRaw),
+        ),
+        initialHighContrastProvider.overrideWithValue(
+          HighContrastController.fromStorage(highContrastRaw),
         ),
         initialOnboardingSeenProvider.overrideWithValue(onboardingSeen),
         firebaseReadyProvider.overrideWithValue(firebaseBootstrap.isReady),

@@ -16,6 +16,8 @@ class SettingsPage extends ConsumerWidget {
     final themeMode = ref.watch(themeModeControllerProvider);
     final locale = ref.watch(localeControllerProvider);
     final textScale = ref.watch(textScaleControllerProvider);
+    final lineHeight = ref.watch(lineHeightControllerProvider);
+    final highContrast = ref.watch(highContrastControllerProvider);
     final authState = ref.watch(authStateProvider);
     final authAction = ref.watch(authActionControllerProvider);
 
@@ -156,6 +158,55 @@ class SettingsPage extends ConsumerWidget {
                   },
                 ),
               ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          NoorCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.tr('lineHeight'),
+                    style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Text(l10n.tr('lineHeightCompact')),
+                    Expanded(
+                      child: Slider(
+                        min: 1.2,
+                        max: 2.0,
+                        divisions: 4,
+                        value: lineHeight,
+                        label: lineHeight.toStringAsFixed(1),
+                        onChanged: (value) {
+                          ref
+                              .read(lineHeightControllerProvider.notifier)
+                              .setHeight(value);
+                        },
+                      ),
+                    ),
+                    Text(l10n.tr('lineHeightRelaxed')),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          NoorCard(
+            child: SwitchListTile.adaptive(
+              contentPadding: EdgeInsets.zero,
+              title: Text(l10n.tr('highContrast')),
+              subtitle: Text(
+                highContrast
+                    ? l10n.tr('highContrastEnabled')
+                    : l10n.tr('highContrastDisabled'),
+              ),
+              value: highContrast,
+              onChanged: (value) {
+                ref
+                    .read(highContrastControllerProvider.notifier)
+                    .setEnabled(value);
+              },
             ),
           ),
           const SizedBox(height: 12),

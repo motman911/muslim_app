@@ -10,6 +10,8 @@ final initialThemeModeProvider = Provider<ThemeMode>((ref) => ThemeMode.system);
 final initialLocaleProvider = Provider<Locale>((ref) => const Locale('ar'));
 final initialOnboardingSeenProvider = Provider<bool>((ref) => false);
 final initialTextScaleProvider = Provider<double>((ref) => 1.0);
+final initialLineHeightProvider = Provider<double>((ref) => 1.5);
+final initialHighContrastProvider = Provider<bool>((ref) => false);
 
 final themeModeControllerProvider =
     StateNotifierProvider<ThemeModeController, ThemeMode>(
@@ -40,6 +42,22 @@ final textScaleControllerProvider =
   (ref) => TextScaleController(
     prefs: ref.watch(sharedPreferencesProvider),
     initialScale: ref.watch(initialTextScaleProvider),
+  ),
+);
+
+final lineHeightControllerProvider =
+    StateNotifierProvider<LineHeightController, double>(
+  (ref) => LineHeightController(
+    prefs: ref.watch(sharedPreferencesProvider),
+    initialHeight: ref.watch(initialLineHeightProvider),
+  ),
+);
+
+final highContrastControllerProvider =
+    StateNotifierProvider<HighContrastController, bool>(
+  (ref) => HighContrastController(
+    prefs: ref.watch(sharedPreferencesProvider),
+    initialValue: ref.watch(initialHighContrastProvider),
   ),
 );
 
@@ -127,5 +145,47 @@ class TextScaleController extends StateNotifier<double> {
     final next = scale.clamp(0.9, 1.3);
     state = next;
     await _prefs.setDouble(storageKey, next);
+  }
+}
+
+class LineHeightController extends StateNotifier<double> {
+  LineHeightController({
+    required SharedPreferences prefs,
+    required double initialHeight,
+  })  : _prefs = prefs,
+        super(initialHeight);
+
+  static const storageKey = 'app_line_height';
+  final SharedPreferences _prefs;
+
+  static double fromStorage(double? value) {
+    if (value == null) {
+      return 1.5;
+    }
+    return value.clamp(1.2, 2.0);
+  }
+
+  Future<void> setHeight(double height) async {
+    final next = height.clamp(1.2, 2.0);
+    state = next;
+    await _prefs.setDouble(storageKey, next);
+  }
+}
+
+class HighContrastController extends StateNotifier<bool> {
+  HighContrastController({
+    required SharedPreferences prefs,
+    required bool initialValue,
+  })  : _prefs = prefs,
+        super(initialValue);
+
+  static const storageKey = 'app_high_contrast';
+  final SharedPreferences _prefs;
+
+  static bool fromStorage(bool? value) => value ?? false;
+
+  Future<void> setEnabled(bool enabled) async {
+    state = enabled;
+    await _prefs.setBool(storageKey, enabled);
   }
 }

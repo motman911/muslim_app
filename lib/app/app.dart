@@ -53,13 +53,18 @@ class _NoorAppState extends ConsumerState<NoorApp> {
     final themeMode = ref.watch(themeModeControllerProvider);
     final locale = ref.watch(localeControllerProvider);
     final textScale = ref.watch(textScaleControllerProvider);
+    final lineHeight = ref.watch(lineHeightControllerProvider);
+    final highContrast = ref.watch(highContrastControllerProvider);
     final router = ref.watch(appRouterProvider);
+
+    final lightTheme = _withTextHeight(AppTheme.lightTheme, lineHeight);
+    final darkTheme = _withTextHeight(AppTheme.darkTheme, lineHeight);
 
     return MaterialApp.router(
       title: 'Noor',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      theme: lightTheme,
+      darkTheme: darkTheme,
       themeMode: themeMode,
       locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
@@ -72,11 +77,21 @@ class _NoorAppState extends ConsumerState<NoorApp> {
       builder: (context, child) {
         final mediaQuery = MediaQuery.of(context);
         return MediaQuery(
-          data: mediaQuery.copyWith(textScaler: TextScaler.linear(textScale)),
+          data: mediaQuery.copyWith(
+            textScaler: TextScaler.linear(textScale),
+            highContrast: highContrast,
+          ),
           child: child ?? const SizedBox.shrink(),
         );
       },
       routerConfig: router,
+    );
+  }
+
+  ThemeData _withTextHeight(ThemeData base, double lineHeight) {
+    return base.copyWith(
+      textTheme: base.textTheme.apply(heightFactor: lineHeight),
+      primaryTextTheme: base.primaryTextTheme.apply(heightFactor: lineHeight),
     );
   }
 }
