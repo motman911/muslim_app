@@ -211,6 +211,48 @@ class SettingsPage extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
           NoorCard(
+            highlight: highContrast,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.tr('preview'),
+                    style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.tr('previewBody'),
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Chip(
+                      label: Text(
+                          '${l10n.tr('textSize')}: ${textScale.toStringAsFixed(2)}'),
+                    ),
+                    const SizedBox(width: 8),
+                    Chip(
+                      label: Text(
+                          '${l10n.tr('lineHeight')}: ${lineHeight.toStringAsFixed(1)}'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  highContrast
+                      ? l10n.tr('highContrastEnabled')
+                      : l10n.tr('highContrastDisabled'),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: highContrast
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).textTheme.bodyMedium?.color,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          NoorCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

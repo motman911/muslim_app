@@ -49,6 +49,9 @@ class AppLocalizations {
       'highContrast': 'تباين عالٍ',
       'highContrastEnabled': 'مفعّل',
       'highContrastDisabled': 'غير مفعّل',
+      'preview': 'معاينة مباشرة',
+      'previewBody':
+          'بسم الله الرحمن الرحيم. هذا مثال يوضح شكل النص الحالي حسب إعداداتك.',
       'light': 'فاتح',
       'dark': 'داكن',
       'system': 'تلقائي',
@@ -118,6 +121,9 @@ class AppLocalizations {
       'highContrast': 'High contrast',
       'highContrastEnabled': 'Enabled',
       'highContrastDisabled': 'Disabled',
+      'preview': 'Live preview',
+      'previewBody':
+          'In the name of Allah, the Most Merciful. This sample reflects your current reading settings.',
       'light': 'Light',
       'dark': 'Dark',
       'system': 'System',
@@ -189,6 +195,9 @@ class AppLocalizations {
       'highContrast': 'Contraste eleve',
       'highContrastEnabled': 'Active',
       'highContrastDisabled': 'Desactive',
+      'preview': 'Apercu en direct',
+      'previewBody':
+          'Au nom d Allah, le Tout Misericordieux. Cet exemple montre vos reglages de lecture actuels.',
       'light': 'Clair',
       'dark': 'Sombre',
       'system': 'Systeme',
