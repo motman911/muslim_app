@@ -33,6 +33,18 @@ class AppTheme {
         color: AppColors.lightTextPrimary,
       ),
     ),
+    chipTheme: ChipThemeData(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+        side: const BorderSide(color: Color(0x16000000)),
+      ),
+      selectedColor: AppColors.lightGoldPrimary.withValues(alpha: 0.14),
+      backgroundColor: AppColors.lightBackgroundSecondary,
+      labelStyle: const TextStyle(
+        color: AppColors.lightTextPrimary,
+        fontWeight: FontWeight.w600,
+      ),
+    ),
     cardTheme: CardThemeData(
       color: AppColors.lightBackgroundElevated,
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -61,11 +73,28 @@ class AppTheme {
       ),
     ),
     navigationBarTheme: NavigationBarThemeData(
-      backgroundColor: AppColors.lightBackgroundElevated,
-      indicatorColor: AppColors.lightGoldPrimary.withValues(alpha: 0.12),
-      shadowColor: Colors.black12,
-      elevation: 8,
+      backgroundColor: Colors.transparent,
+      indicatorColor: AppColors.lightGoldPrimary.withValues(alpha: 0.14),
+      shadowColor: Colors.black.withValues(alpha: 0.06),
+      elevation: 0,
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+      iconTheme: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return const IconThemeData(color: AppColors.lightGoldPrimary);
+        }
+        return const IconThemeData(color: AppColors.lightTextSecondary);
+      }),
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        return TextStyle(
+          fontFamily: 'Amiri',
+          color: states.contains(WidgetState.selected)
+              ? AppColors.lightTextPrimary
+              : AppColors.lightTextSecondary,
+          fontWeight: states.contains(WidgetState.selected)
+              ? FontWeight.w700
+              : FontWeight.w500,
+        );
+      }),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: AppColors.lightGoldPrimary,
@@ -78,11 +107,31 @@ class AppTheme {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
     textTheme: const TextTheme(
-      displaySmall: TextStyle(fontSize: 28, fontWeight: FontWeight.w800),
-      headlineSmall: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
-      titleLarge: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-      bodyLarge: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-      bodyMedium: TextStyle(fontSize: 13, fontWeight: FontWeight.w400),
+      displaySmall: TextStyle(
+        fontFamily: 'Amiri',
+        fontSize: 30,
+        fontWeight: FontWeight.w800,
+      ),
+      headlineSmall: TextStyle(
+        fontFamily: 'Amiri',
+        fontSize: 24,
+        fontWeight: FontWeight.w700,
+      ),
+      titleLarge: TextStyle(
+        fontFamily: 'Amiri',
+        fontSize: 19,
+        fontWeight: FontWeight.w700,
+      ),
+      bodyLarge: TextStyle(
+        fontFamily: 'Amiri',
+        fontSize: 15,
+        fontWeight: FontWeight.w500,
+      ),
+      bodyMedium: TextStyle(
+        fontFamily: 'Amiri',
+        fontSize: 13,
+        fontWeight: FontWeight.w400,
+      ),
     ),
   );
 
@@ -111,6 +160,18 @@ class AppTheme {
         fontSize: 22,
         fontWeight: FontWeight.bold,
         color: AppColors.darkTextPrimary,
+      ),
+    ),
+    chipTheme: ChipThemeData(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+        side: const BorderSide(color: AppColors.border),
+      ),
+      selectedColor: AppColors.goldSubtle,
+      backgroundColor: AppColors.darkBackgroundSecondary,
+      labelStyle: const TextStyle(
+        color: AppColors.darkTextPrimary,
+        fontWeight: FontWeight.w600,
       ),
     ),
     cardTheme: CardThemeData(
@@ -142,12 +203,28 @@ class AppTheme {
       ),
     ),
     navigationBarTheme: NavigationBarThemeData(
-      backgroundColor:
-          AppColors.darkBackgroundSecondary.withValues(alpha: 0.96),
+      backgroundColor: Colors.transparent,
       indicatorColor: AppColors.goldSubtle,
       shadowColor: Colors.black.withValues(alpha: 0.45),
-      elevation: 16,
+      elevation: 0,
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+      iconTheme: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return const IconThemeData(color: AppColors.goldPrimary);
+        }
+        return const IconThemeData(color: AppColors.darkTextSecondary);
+      }),
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        return TextStyle(
+          fontFamily: 'Amiri',
+          color: states.contains(WidgetState.selected)
+              ? AppColors.darkTextPrimary
+              : AppColors.darkTextSecondary,
+          fontWeight: states.contains(WidgetState.selected)
+              ? FontWeight.w700
+              : FontWeight.w500,
+        );
+      }),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: AppColors.goldPrimary,
