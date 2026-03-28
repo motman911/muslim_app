@@ -62,6 +62,7 @@ class QuranAudioState {
   const QuranAudioState({
     this.currentSurahId,
     this.currentSurahName,
+    this.currentReciterId = 'ar.alafasy',
     this.isPlaying = false,
     this.isLoading = false,
     this.errorMessage,
@@ -69,6 +70,7 @@ class QuranAudioState {
 
   final int? currentSurahId;
   final String? currentSurahName;
+  final String currentReciterId;
   final bool isPlaying;
   final bool isLoading;
   final String? errorMessage;
@@ -76,6 +78,7 @@ class QuranAudioState {
   QuranAudioState copyWith({
     int? currentSurahId,
     String? currentSurahName,
+    String? currentReciterId,
     bool? isPlaying,
     bool? isLoading,
     String? errorMessage,
@@ -84,6 +87,7 @@ class QuranAudioState {
     return QuranAudioState(
       currentSurahId: currentSurahId ?? this.currentSurahId,
       currentSurahName: currentSurahName ?? this.currentSurahName,
+      currentReciterId: currentReciterId ?? this.currentReciterId,
       isPlaying: isPlaying ?? this.isPlaying,
       isLoading: isLoading ?? this.isLoading,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
@@ -97,7 +101,11 @@ class QuranAudioController extends StateNotifier<QuranAudioState> {
 
   final QuranAudioService _audioService;
 
-  Future<void> toggleSurah(SurahEntity surah) async {
+  Future<void> toggleSurah(
+    SurahEntity surah, {
+    String? reciterId,
+  }) async {
+    final selectedReciterId = reciterId ?? state.currentReciterId;
     final isCurrent = state.currentSurahId == surah.id;
 
     if (isCurrent && state.isPlaying) {
@@ -111,10 +119,14 @@ class QuranAudioController extends StateNotifier<QuranAudioState> {
         isLoading: true,
         currentSurahId: surah.id,
         currentSurahName: surah.arabicName,
+        currentReciterId: selectedReciterId,
         clearError: true,
       );
 
-      await _audioService.playSurah(surahId: surah.id);
+      await _audioService.playSurah(
+        surahId: surah.id,
+        reciter: selectedReciterId,
+      );
 
       state = state.copyWith(
         isLoading: false,

@@ -36,6 +36,7 @@ class AppLocalizations {
       'azkar': 'الأذكار',
       'qibla': 'القبلة',
       'audio': 'التلاوات',
+      'reciter': 'القارئ',
       'settings': 'الإعدادات',
       'language': 'اللغة',
       'theme': 'المظهر',
@@ -47,6 +48,9 @@ class AppLocalizations {
       'nextPrayer': 'الصلاة القادمة',
       'noRemainingPrayer': 'لا توجد صلاة متبقية اليوم',
       'qiblaHint': 'ضع الهاتف على سطح مستوٍ لمعايرة اتجاه القبلة.',
+      'qiblaAngle': 'زاوية القبلة',
+      'qiblaSensorNotSupported': 'هذا الجهاز لا يدعم حساس البوصلة.',
+      'openLocationSettings': 'فتح إعدادات الموقع',
       'offlineReady': 'جاهز للعمل بدون إنترنت',
       'nowPlaying': 'قيد التشغيل',
       'audioError': 'تعذر تشغيل التلاوة. تحقق من اتصال الإنترنت.',
@@ -83,6 +87,7 @@ class AppLocalizations {
       'azkar': 'Azkar',
       'qibla': 'Qibla',
       'audio': 'Audio',
+      'reciter': 'Reciter',
       'settings': 'Settings',
       'language': 'Language',
       'theme': 'Theme',
@@ -95,6 +100,10 @@ class AppLocalizations {
       'noRemainingPrayer': 'No remaining prayer today',
       'qiblaHint':
           'Place your phone on a flat surface to calibrate Qibla direction.',
+      'qiblaAngle': 'Qibla angle',
+      'qiblaSensorNotSupported':
+          'This device does not support a compass sensor.',
+      'openLocationSettings': 'Open location settings',
       'offlineReady': 'Offline ready',
       'nowPlaying': 'Now playing',
       'audioError': 'Unable to play recitation. Check internet connection.',
@@ -131,6 +140,7 @@ class AppLocalizations {
       'azkar': 'Azkar',
       'qibla': 'Qibla',
       'audio': 'Recitations',
+      'reciter': 'Recitateur',
       'settings': 'Parametres',
       'language': 'Langue',
       'theme': 'Theme',
@@ -143,6 +153,10 @@ class AppLocalizations {
       'noRemainingPrayer': 'Aucune priere restante aujourd\'hui',
       'qiblaHint':
           'Posez le telephone sur une surface plane pour calibrer la direction Qibla.',
+      'qiblaAngle': 'Angle de la Qibla',
+      'qiblaSensorNotSupported':
+          'Cet appareil ne prend pas en charge le capteur de boussole.',
+      'openLocationSettings': 'Ouvrir les parametres de localisation',
       'offlineReady': 'Pret hors ligne',
       'nowPlaying': 'Lecture en cours',
       'audioError':

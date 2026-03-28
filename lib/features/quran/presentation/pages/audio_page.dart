@@ -2,21 +2,66 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/localization/app_localizations.dart';
+import '../../../../services/audio_service.dart';
 import '../providers/quran_providers.dart';
 
-class AudioPage extends ConsumerWidget {
+class AudioPage extends ConsumerStatefulWidget {
   const AudioPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AudioPage> createState() => _AudioPageState();
+}
+
+class _AudioPageState extends ConsumerState<AudioPage> {
+  late String _selectedReciterId;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedReciterId = QuranAudioService.reciters.first.id;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final surahsAsync = ref.watch(surahsProvider);
     final audioState = ref.watch(quranAudioControllerProvider);
+    final activeReciter = QuranAudioService.reciters.firstWhere(
+      (reciter) => reciter.id == audioState.currentReciterId,
+      orElse: () => QuranAudioService.reciters.first,
+    );
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.tr('audio'))),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            child: DropdownButtonFormField<String>(
+              initialValue: _selectedReciterId,
+              decoration: InputDecoration(
+                labelText: l10n.tr('reciter'),
+                border: const OutlineInputBorder(),
+              ),
+              items: QuranAudioService.reciters
+                  .map(
+                    (reciter) => DropdownMenuItem<String>(
+                      value: reciter.id,
+                      child: Text(reciter.name),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (value) {
+                if (value == null) {
+                  return;
+                }
+                setState(() {
+                  _selectedReciterId = value;
+                });
+              },
+            ),
+          ),
+          if (audioState.isLoading) const LinearProgressIndicator(minHeight: 2),
           Expanded(
             child: surahsAsync.when(
               data: (surahs) {
@@ -39,17 +84,23 @@ class AudioPage extends ConsumerWidget {
                       ),
                       subtitle:
                           Text('${surah.englishName} • ${surah.ayahCount}'),
+                      selected: isCurrent,
                       trailing: IconButton(
                         icon: Icon(
                           isPlayingCurrent
                               ? Icons.pause_rounded
                               : Icons.play_arrow_rounded,
                         ),
-                        onPressed: () {
-                          ref
-                              .read(quranAudioControllerProvider.notifier)
-                              .toggleSurah(surah);
-                        },
+                        onPressed: audioState.isLoading
+                            ? null
+                            : () {
+                                ref
+                                    .read(quranAudioControllerProvider.notifier)
+                                    .toggleSurah(
+                                      surah,
+                                      reciterId: _selectedReciterId,
+                                    );
+                              },
                       ),
                     );
                   },
@@ -68,6 +119,7 @@ class AudioPage extends ConsumerWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
+              subtitle: Text('${l10n.tr('reciter')}: ${activeReciter.name}'),
               trailing: IconButton(
                 onPressed: () {
                   ref.read(quranAudioControllerProvider.notifier).stop();

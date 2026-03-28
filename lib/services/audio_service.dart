@@ -1,7 +1,24 @@
 import 'package:just_audio/just_audio.dart';
 
+class QuranReciter {
+  const QuranReciter({
+    required this.id,
+    required this.name,
+  });
+
+  final String id;
+  final String name;
+}
+
 class QuranAudioService {
   QuranAudioService() : _player = AudioPlayer();
+
+  static const reciters = <QuranReciter>[
+    QuranReciter(id: 'ar.alafasy', name: 'مشاري العفاسي'),
+    QuranReciter(id: 'ar.abdulbasitmurattal', name: 'عبد الباسط مرتل'),
+    QuranReciter(id: 'ar.husary', name: 'الحصري'),
+    QuranReciter(id: 'ar.minshawi', name: 'المنشاوي'),
+  ];
 
   final AudioPlayer _player;
 
