@@ -165,8 +165,17 @@ class SettingsPage extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(l10n.tr('lineHeight'),
-                    style: Theme.of(context).textTheme.titleMedium),
+                Row(
+                  children: [
+                    Text(l10n.tr('lineHeight'),
+                        style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(width: 6),
+                    Tooltip(
+                      message: l10n.tr('tooltipLineHeight'),
+                      child: const Icon(Icons.info_outline_rounded, size: 18),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
@@ -195,7 +204,16 @@ class SettingsPage extends ConsumerWidget {
           NoorCard(
             child: SwitchListTile.adaptive(
               contentPadding: EdgeInsets.zero,
-              title: Text(l10n.tr('highContrast')),
+              title: Row(
+                children: [
+                  Text(l10n.tr('highContrast')),
+                  const SizedBox(width: 6),
+                  Tooltip(
+                    message: l10n.tr('tooltipHighContrast'),
+                    child: const Icon(Icons.info_outline_rounded, size: 18),
+                  ),
+                ],
+              ),
               subtitle: Text(
                 highContrast
                     ? l10n.tr('highContrastEnabled')
@@ -223,6 +241,16 @@ class SettingsPage extends ConsumerWidget {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
+                    NoorButton(
+                      style: NoorButtonStyle.primary,
+                      label: l10n.tr('presetRecommended'),
+                      onPressed: () {
+                        _applyLanguageRecommendedPreset(
+                          ref,
+                          localeCode: locale.languageCode,
+                        );
+                      },
+                    ),
                     NoorButton(
                       style: NoorButtonStyle.secondary,
                       label: l10n.tr('presetBalanced'),
@@ -322,8 +350,17 @@ class SettingsPage extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(l10n.tr('textSize'),
-                    style: Theme.of(context).textTheme.titleMedium),
+                Row(
+                  children: [
+                    Text(l10n.tr('textSize'),
+                        style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(width: 6),
+                    Tooltip(
+                      message: l10n.tr('tooltipTextSize'),
+                      child: const Icon(Icons.info_outline_rounded, size: 18),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
@@ -474,5 +511,34 @@ class SettingsPage extends ConsumerWidget {
       lineHeight: 1.5,
       highContrast: false,
     );
+  }
+
+  void _applyLanguageRecommendedPreset(
+    WidgetRef ref, {
+    required String localeCode,
+  }) {
+    switch (localeCode) {
+      case 'ar':
+        _applyAccessibilityPreset(
+          ref,
+          textScale: 1.15,
+          lineHeight: 1.8,
+          highContrast: true,
+        );
+      case 'fr':
+        _applyAccessibilityPreset(
+          ref,
+          textScale: 1.05,
+          lineHeight: 1.6,
+          highContrast: false,
+        );
+      default:
+        _applyAccessibilityPreset(
+          ref,
+          textScale: 1.0,
+          lineHeight: 1.5,
+          highContrast: false,
+        );
+    }
   }
 }

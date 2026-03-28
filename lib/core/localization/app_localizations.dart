@@ -50,10 +50,14 @@ class AppLocalizations {
       'highContrastEnabled': 'مفعّل',
       'highContrastDisabled': 'غير مفعّل',
       'accessibilityPresets': 'إعدادات جاهزة للقراءة',
+      'presetRecommended': 'موصى به',
       'presetBalanced': 'متوازن',
       'presetComfort': 'مريح للقراءة',
       'presetCompact': 'مضغوط',
       'resetAccessibility': 'إعادة ضبط الإتاحة',
+      'tooltipTextSize': 'تكبير أو تصغير النصوص داخل التطبيق.',
+      'tooltipLineHeight': 'زيادة المسافة بين السطور لقراءة أريح.',
+      'tooltipHighContrast': 'تحسين وضوح الألوان لعناصر الواجهة.',
       'preview': 'معاينة مباشرة',
       'previewBody':
           'بسم الله الرحمن الرحيم. هذا مثال يوضح شكل النص الحالي حسب إعداداتك.',
@@ -127,10 +131,14 @@ class AppLocalizations {
       'highContrastEnabled': 'Enabled',
       'highContrastDisabled': 'Disabled',
       'accessibilityPresets': 'Reading presets',
+      'presetRecommended': 'Recommended',
       'presetBalanced': 'Balanced',
       'presetComfort': 'Comfort',
       'presetCompact': 'Compact',
       'resetAccessibility': 'Reset accessibility',
+      'tooltipTextSize': 'Increase or decrease app text size.',
+      'tooltipLineHeight': 'Adjust spacing between text lines for comfort.',
+      'tooltipHighContrast': 'Boost color contrast for better readability.',
       'preview': 'Live preview',
       'previewBody':
           'In the name of Allah, the Most Merciful. This sample reflects your current reading settings.',
@@ -206,10 +214,17 @@ class AppLocalizations {
       'highContrastEnabled': 'Active',
       'highContrastDisabled': 'Desactive',
       'accessibilityPresets': 'Profils de lecture',
+      'presetRecommended': 'Recommande',
       'presetBalanced': 'Equilibre',
       'presetComfort': 'Confort',
       'presetCompact': 'Compact',
       'resetAccessibility': 'Reinitialiser l acces',
+      'tooltipTextSize':
+          'Augmenter ou reduire la taille du texte dans l application.',
+      'tooltipLineHeight':
+          'Ajuster l espace entre les lignes pour une lecture confortable.',
+      'tooltipHighContrast':
+          'Renforcer le contraste des couleurs pour une meilleure lisibilite.',
       'preview': 'Apercu en direct',
       'previewBody':
           'Au nom d Allah, le Tout Misericordieux. Cet exemple montre vos reglages de lecture actuels.',
