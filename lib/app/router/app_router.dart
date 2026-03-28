@@ -5,6 +5,7 @@ import '../../features/azkar/presentation/pages/azkar_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../features/prayer_times/presentation/pages/prayer_times_page.dart';
 import '../../features/qibla/presentation/pages/qibla_page.dart';
+import '../../features/quran/presentation/pages/audio_page.dart';
 import '../../features/quran/presentation/pages/bookmarks_page.dart';
 import '../../features/quran/presentation/pages/quran_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
@@ -52,6 +53,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: '/qibla',
             pageBuilder: (context, state) => const NoTransitionPage(
               child: QiblaPage(),
+            ),
+          ),
+          GoRoute(
+            path: '/audio',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: AudioPage(),
             ),
           ),
           GoRoute(
