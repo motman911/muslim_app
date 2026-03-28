@@ -211,6 +211,72 @@ class SettingsPage extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
           NoorCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.tr('accessibilityPresets'),
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    NoorButton(
+                      style: NoorButtonStyle.secondary,
+                      label: l10n.tr('presetBalanced'),
+                      onPressed: () {
+                        _applyAccessibilityPreset(
+                          ref,
+                          textScale: 1.0,
+                          lineHeight: 1.5,
+                          highContrast: false,
+                        );
+                      },
+                    ),
+                    NoorButton(
+                      style: NoorButtonStyle.secondary,
+                      label: l10n.tr('presetComfort'),
+                      onPressed: () {
+                        _applyAccessibilityPreset(
+                          ref,
+                          textScale: 1.2,
+                          lineHeight: 1.8,
+                          highContrast: true,
+                        );
+                      },
+                    ),
+                    NoorButton(
+                      style: NoorButtonStyle.secondary,
+                      label: l10n.tr('presetCompact'),
+                      onPressed: () {
+                        _applyAccessibilityPreset(
+                          ref,
+                          textScale: 0.95,
+                          lineHeight: 1.3,
+                          highContrast: false,
+                        );
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton.icon(
+                    onPressed: () {
+                      _resetAccessibility(ref);
+                    },
+                    icon: const Icon(Icons.restart_alt_rounded),
+                    label: Text(l10n.tr('resetAccessibility')),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          NoorCard(
             highlight: highContrast,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -388,5 +454,25 @@ class SettingsPage extends ConsumerWidget {
 
     emailController.dispose();
     passwordController.dispose();
+  }
+
+  void _applyAccessibilityPreset(
+    WidgetRef ref, {
+    required double textScale,
+    required double lineHeight,
+    required bool highContrast,
+  }) {
+    ref.read(textScaleControllerProvider.notifier).setScale(textScale);
+    ref.read(lineHeightControllerProvider.notifier).setHeight(lineHeight);
+    ref.read(highContrastControllerProvider.notifier).setEnabled(highContrast);
+  }
+
+  void _resetAccessibility(WidgetRef ref) {
+    _applyAccessibilityPreset(
+      ref,
+      textScale: 1.0,
+      lineHeight: 1.5,
+      highContrast: false,
+    );
   }
 }
