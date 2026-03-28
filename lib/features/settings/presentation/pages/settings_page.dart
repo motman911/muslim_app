@@ -155,7 +155,7 @@ class SettingsPage extends ConsumerWidget {
               style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
-            value: locale.languageCode,
+            initialValue: locale.languageCode,
             decoration: const InputDecoration(border: OutlineInputBorder()),
             items: const [
               DropdownMenuItem(value: 'ar', child: Text('العربية')),
