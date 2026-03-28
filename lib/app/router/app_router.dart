@@ -5,10 +5,10 @@ import '../../features/azkar/presentation/pages/azkar_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../features/prayer_times/presentation/pages/prayer_times_page.dart';
 import '../../features/qibla/presentation/pages/qibla_page.dart';
-import '../../features/quran/presentation/pages/audio_page.dart';
 import '../../features/quran/presentation/pages/bookmarks_page.dart';
-import '../../features/quran/presentation/pages/quran_page.dart';
-import '../../features/quran/presentation/pages/surah_reader_page.dart';
+import '../../features/quran/presentation/pages/quran_home_page.dart';
+import '../../features/quran/presentation/pages/quran_recitations_page.dart';
+import '../../features/quran/presentation/pages/surah_reading_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../shared/providers/app_settings_providers.dart';
 import '../widgets/main_shell_scaffold.dart';
@@ -29,7 +29,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/quran',
             pageBuilder: (context, state) => const NoTransitionPage(
-              child: QuranPage(),
+              child: QuranHomePage(),
+            ),
+          ),
+          GoRoute(
+            path: '/audio',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: QuranRecitationsPage(),
             ),
           ),
           GoRoute(
@@ -57,17 +63,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             ),
           ),
           GoRoute(
-            path: '/audio',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: AudioPage(),
-            ),
-          ),
-          GoRoute(
             path: '/quran/surah/:surahId',
             builder: (context, state) {
               final surahIdRaw = state.pathParameters['surahId'] ?? '1';
               final surahId = int.tryParse(surahIdRaw) ?? 1;
-              return SurahReaderPage(surahId: surahId);
+              return SurahReadingPage(surahId: surahId);
             },
           ),
           GoRoute(

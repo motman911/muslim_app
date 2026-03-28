@@ -10,6 +10,7 @@ class MainShellScaffold extends StatelessWidget {
 
   static const _tabs = <_NavTab>[
     _NavTab(path: '/quran', icon: Icons.menu_book_rounded, labelKey: 'quran'),
+    _NavTab(path: '/audio', icon: Icons.graphic_eq_rounded, labelKey: 'audio'),
     _NavTab(
       path: '/prayer-times',
       icon: Icons.access_time_filled_rounded,
@@ -17,7 +18,6 @@ class MainShellScaffold extends StatelessWidget {
     ),
     _NavTab(path: '/azkar', icon: Icons.favorite_rounded, labelKey: 'azkar'),
     _NavTab(path: '/qibla', icon: Icons.explore_rounded, labelKey: 'qibla'),
-    _NavTab(path: '/audio', icon: Icons.graphic_eq_rounded, labelKey: 'audio'),
     _NavTab(
       path: '/settings',
       icon: Icons.settings_rounded,
