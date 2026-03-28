@@ -58,6 +58,21 @@ class AppLocalizations {
       'tooltipTextSize': 'تكبير أو تصغير النصوص داخل التطبيق.',
       'tooltipLineHeight': 'زيادة المسافة بين السطور لقراءة أريح.',
       'tooltipHighContrast': 'تحسين وضوح الألوان لعناصر الواجهة.',
+      'accessibilityGuide': 'دليل الإتاحة',
+      'accessibilityGuideSubtitle': 'شرح سريع لضبط القراءة بما يناسبك.',
+      'guideStepDisplayTitle': 'ابدأ بحجم النص',
+      'guideStepDisplayBody':
+          'استخدم شريط حجم النص للوصول إلى مستوى قراءة واضح ومريح لعينيك.',
+      'guideStepReadabilityTitle': 'اضبط تباعد السطور',
+      'guideStepReadabilityBody':
+          'زيادة التباعد تجعل قراءة الفقرات الطويلة أسهل وتقلل إجهاد العين.',
+      'guideStepContrastTitle': 'فعّل التباين عند الحاجة',
+      'guideStepContrastBody':
+          'إذا كانت الإضاءة قوية أو ضعيفة، جرّب التباين العالي لتحسين الوضوح.',
+      'step': 'الخطوة',
+      'previous': 'السابق',
+      'done': 'تم',
+      'applyRecommendedNow': 'تطبيق الإعداد الموصى به الآن',
       'preview': 'معاينة مباشرة',
       'previewBody':
           'بسم الله الرحمن الرحيم. هذا مثال يوضح شكل النص الحالي حسب إعداداتك.',
@@ -139,6 +154,22 @@ class AppLocalizations {
       'tooltipTextSize': 'Increase or decrease app text size.',
       'tooltipLineHeight': 'Adjust spacing between text lines for comfort.',
       'tooltipHighContrast': 'Boost color contrast for better readability.',
+      'accessibilityGuide': 'Accessibility guide',
+      'accessibilityGuideSubtitle':
+          'A quick walkthrough to tune reading settings.',
+      'guideStepDisplayTitle': 'Start with text size',
+      'guideStepDisplayBody':
+          'Use the text-size slider to reach a comfortable and clear reading level.',
+      'guideStepReadabilityTitle': 'Adjust line height',
+      'guideStepReadabilityBody':
+          'More spacing between lines can make long passages easier to follow.',
+      'guideStepContrastTitle': 'Use high contrast when needed',
+      'guideStepContrastBody':
+          'In bright or low light, high contrast can improve readability.',
+      'step': 'Step',
+      'previous': 'Previous',
+      'done': 'Done',
+      'applyRecommendedNow': 'Apply recommended now',
       'preview': 'Live preview',
       'previewBody':
           'In the name of Allah, the Most Merciful. This sample reflects your current reading settings.',
@@ -225,6 +256,22 @@ class AppLocalizations {
           'Ajuster l espace entre les lignes pour une lecture confortable.',
       'tooltipHighContrast':
           'Renforcer le contraste des couleurs pour une meilleure lisibilite.',
+      'accessibilityGuide': 'Guide d accessibilite',
+      'accessibilityGuideSubtitle':
+          'Une aide rapide pour ajuster votre lecture.',
+      'guideStepDisplayTitle': 'Commencez par la taille du texte',
+      'guideStepDisplayBody':
+          'Utilisez le curseur de taille pour obtenir une lecture claire et confortable.',
+      'guideStepReadabilityTitle': 'Ajustez l interligne',
+      'guideStepReadabilityBody':
+          'Un interligne plus grand facilite la lecture des passages longs.',
+      'guideStepContrastTitle': 'Activez le contraste eleve si besoin',
+      'guideStepContrastBody':
+          'En lumiere forte ou faible, le contraste eleve peut ameliorer la lisibilite.',
+      'step': 'Etape',
+      'previous': 'Precedent',
+      'done': 'Termine',
+      'applyRecommendedNow': 'Appliquer le profil recommande',
       'preview': 'Apercu en direct',
       'previewBody':
           'Au nom d Allah, le Tout Misericordieux. Cet exemple montre vos reglages de lecture actuels.',

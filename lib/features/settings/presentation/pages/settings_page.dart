@@ -305,6 +305,19 @@ class SettingsPage extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
           NoorCard(
+            child: ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.menu_book_rounded),
+              title: Text(l10n.tr('accessibilityGuide')),
+              subtitle: Text(l10n.tr('accessibilityGuideSubtitle')),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () {
+                _showAccessibilityGuide(context: context, ref: ref);
+              },
+            ),
+          ),
+          const SizedBox(height: 12),
+          NoorCard(
             highlight: highContrast,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -540,5 +553,100 @@ class SettingsPage extends ConsumerWidget {
           highContrast: false,
         );
     }
+  }
+
+  Future<void> _showAccessibilityGuide({
+    required BuildContext context,
+    required WidgetRef ref,
+  }) async {
+    final l10n = context.l10n;
+
+    final steps = [
+      (
+        title: l10n.tr('guideStepDisplayTitle'),
+        body: l10n.tr('guideStepDisplayBody'),
+      ),
+      (
+        title: l10n.tr('guideStepReadabilityTitle'),
+        body: l10n.tr('guideStepReadabilityBody'),
+      ),
+      (
+        title: l10n.tr('guideStepContrastTitle'),
+        body: l10n.tr('guideStepContrastBody'),
+      ),
+    ];
+
+    int currentStep = 0;
+
+    await showDialog<void>(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            final step = steps[currentStep];
+            final isFirst = currentStep == 0;
+            final isLast = currentStep == steps.length - 1;
+
+            return AlertDialog(
+              title: Text(l10n.tr('accessibilityGuide')),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${l10n.tr('step')} ${currentStep + 1}/${steps.length}',
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    step.title,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(step.body),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isFirst
+                      ? null
+                      : () {
+                          setState(() {
+                            currentStep -= 1;
+                          });
+                        },
+                  child: Text(l10n.tr('previous')),
+                ),
+                if (isLast)
+                  TextButton(
+                    onPressed: () {
+                      final localeCode =
+                          ref.read(localeControllerProvider).languageCode;
+                      _applyLanguageRecommendedPreset(
+                        ref,
+                        localeCode: localeCode,
+                      );
+                      Navigator.of(context).pop();
+                    },
+                    child: Text(l10n.tr('applyRecommendedNow')),
+                  ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (isLast) {
+                      Navigator.of(context).pop();
+                      return;
+                    }
+                    setState(() {
+                      currentStep += 1;
+                    });
+                  },
+                  child: Text(isLast ? l10n.tr('done') : l10n.tr('continue')),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 }
