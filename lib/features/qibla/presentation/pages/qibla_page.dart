@@ -44,6 +44,7 @@ class _QiblaPageState extends State<QiblaPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.tr('qibla'))),
@@ -58,27 +59,31 @@ class _QiblaPageState extends State<QiblaPage> {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.location_off_rounded, size: 88),
-                    const SizedBox(height: 16),
-                    Text(
-                      l10n.tr('qiblaHint'),
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    const SizedBox(height: 12),
-                    FilledButton(
-                      onPressed: () async {
-                        await Geolocator.openLocationSettings();
-                        setState(() {
-                          _permissionAndServiceFuture = _ensureLocationReady();
-                        });
-                      },
-                      child: Text(l10n.tr('openLocationSettings')),
-                    ),
-                  ],
+                child: NoorCard(
+                  margin: EdgeInsets.zero,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.location_off_rounded, size: 88),
+                      const SizedBox(height: 16),
+                      Text(
+                        l10n.tr('qiblaHint'),
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      const SizedBox(height: 12),
+                      FilledButton(
+                        onPressed: () async {
+                          await Geolocator.openLocationSettings();
+                          setState(() {
+                            _permissionAndServiceFuture =
+                                _ensureLocationReady();
+                          });
+                        },
+                        child: Text(l10n.tr('openLocationSettings')),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
@@ -95,10 +100,13 @@ class _QiblaPageState extends State<QiblaPage> {
                 return Center(
                   child: Padding(
                     padding: const EdgeInsets.all(24),
-                    child: Text(
-                      l10n.tr('qiblaSensorNotSupported'),
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyLarge,
+                    child: NoorCard(
+                      margin: EdgeInsets.zero,
+                      child: Text(
+                        l10n.tr('qiblaSensorNotSupported'),
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
                     ),
                   ),
                 );
@@ -132,6 +140,9 @@ class _QiblaPageState extends State<QiblaPage> {
                           final delta =
                               ((qibla - direction + 540) % 360 - 180).abs();
                           final aligned = delta <= 10;
+                          final alignmentStatus = aligned
+                              ? l10n.tr('qiblaAlignmentExcellent')
+                              : l10n.tr('qiblaAlignmentNeedsAdjust');
 
                           return Center(
                             child: Column(
@@ -142,9 +153,46 @@ class _QiblaPageState extends State<QiblaPage> {
                                   highlight: aligned,
                                   child: Column(
                                     children: [
+                                      Chip(
+                                        label: Text(
+                                          '${l10n.tr('compassLive')}: $alignmentStatus',
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
                                       Stack(
                                         alignment: Alignment.center,
                                         children: [
+                                          Container(
+                                            width: 210,
+                                            height: 210,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              gradient: isDark
+                                                  ? const LinearGradient(
+                                                      colors: [
+                                                        Color(0xFF163228),
+                                                        Color(0xFF10251F),
+                                                      ],
+                                                      begin: Alignment.topLeft,
+                                                      end:
+                                                          Alignment.bottomRight,
+                                                    )
+                                                  : const LinearGradient(
+                                                      colors: [
+                                                        Color(0xFFEAF5F0),
+                                                        Color(0xFFDDEDE5),
+                                                      ],
+                                                      begin: Alignment.topLeft,
+                                                      end:
+                                                          Alignment.bottomRight,
+                                                    ),
+                                              border: Border.all(
+                                                color: aligned
+                                                    ? AppColors.success
+                                                    : AppColors.borderActive,
+                                              ),
+                                            ),
+                                          ),
                                           Transform.rotate(
                                             angle: -direction * (math.pi / 180),
                                             child: const Icon(
@@ -179,6 +227,20 @@ class _QiblaPageState extends State<QiblaPage> {
                                                   .secondary,
                                           fontWeight: FontWeight.w600,
                                         ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      OutlinedButton.icon(
+                                        onPressed: () {
+                                          setState(() {
+                                            _permissionAndServiceFuture =
+                                                _ensureLocationReady();
+                                            _sensorSupportFuture = FlutterQiblah
+                                                .androidDeviceSensorSupport();
+                                          });
+                                        },
+                                        icon: const Icon(Icons.sync_rounded),
+                                        label:
+                                            Text(l10n.tr('recalibrateQibla')),
                                       ),
                                     ],
                                   ),
