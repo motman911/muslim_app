@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../services/audio_service.dart';
 import '../../../../services/reading_progress_sync_service.dart';
 import '../../data/datasources/quran_local_data_source.dart';
+import '../../data/datasources/quran_remote_data_source.dart';
 import '../../data/repositories/quran_repository_impl.dart';
 import '../../domain/entities/surah_entity.dart';
 import '../../domain/repositories/quran_repository.dart';
@@ -12,8 +13,15 @@ final quranLocalDataSourceProvider = Provider<QuranLocalDataSource>(
   (ref) => QuranLocalDataSource(),
 );
 
+final quranRemoteDataSourceProvider = Provider<QuranRemoteDataSource>(
+  (ref) => QuranRemoteDataSource(),
+);
+
 final quranRepositoryProvider = Provider<QuranRepository>(
-  (ref) => QuranRepositoryImpl(ref.watch(quranLocalDataSourceProvider)),
+  (ref) => QuranRepositoryImpl(
+    ref.watch(quranLocalDataSourceProvider),
+    ref.watch(quranRemoteDataSourceProvider),
+  ),
 );
 
 final getSurahsUseCaseProvider = Provider<GetSurahsUseCase>(
