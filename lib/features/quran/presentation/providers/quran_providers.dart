@@ -4,6 +4,8 @@ import '../../../../services/audio_service.dart';
 import '../../../../services/reading_progress_sync_service.dart';
 import '../../data/datasources/quran_local_data_source.dart';
 import '../../data/datasources/quran_remote_data_source.dart';
+import '../../data/datasources/quran_verses_remote_data_source.dart';
+import '../../data/models/ayah_model.dart';
 import '../../data/repositories/quran_repository_impl.dart';
 import '../../domain/entities/surah_entity.dart';
 import '../../domain/repositories/quran_repository.dart';
@@ -15,6 +17,11 @@ final quranLocalDataSourceProvider = Provider<QuranLocalDataSource>(
 
 final quranRemoteDataSourceProvider = Provider<QuranRemoteDataSource>(
   (ref) => QuranRemoteDataSource(),
+);
+
+final quranVersesRemoteDataSourceProvider =
+    Provider<QuranVersesRemoteDataSource>(
+  (ref) => QuranVersesRemoteDataSource(),
 );
 
 final quranRepositoryProvider = Provider<QuranRepository>(
@@ -33,6 +40,13 @@ final surahSearchTextProvider = StateProvider<String>((ref) => '');
 final surahsProvider = FutureProvider<List<SurahEntity>>((ref) async {
   final useCase = ref.watch(getSurahsUseCaseProvider);
   return useCase();
+});
+
+final surahAyahsProvider =
+    FutureProvider.family<List<AyahModel>, int>((ref, surahId) async {
+  return ref
+      .watch(quranVersesRemoteDataSourceProvider)
+      .getAyahsBySurah(surahId);
 });
 
 final filteredSurahsProvider = Provider<AsyncValue<List<SurahEntity>>>((ref) {

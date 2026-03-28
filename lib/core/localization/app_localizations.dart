@@ -72,6 +72,7 @@ class AppLocalizations {
       'ayah': 'الآية',
       'refreshQuran': 'تحديث بيانات القرآن',
       'quranRefreshed': 'تم تحديث قائمة السور',
+      'readSurah': 'قراءة السورة',
     },
     'en': {
       'appName': 'Noor',
@@ -125,6 +126,7 @@ class AppLocalizations {
       'ayah': 'Ayah',
       'refreshQuran': 'Refresh Quran data',
       'quranRefreshed': 'Surahs list refreshed',
+      'readSurah': 'Read surah',
     },
     'fr': {
       'appName': 'Noor',
@@ -179,6 +181,7 @@ class AppLocalizations {
       'ayah': 'Verset',
       'refreshQuran': 'Actualiser les donnees du Coran',
       'quranRefreshed': 'Liste des sourates mise a jour',
+      'readSurah': 'Lire la sourate',
     },
   };
 

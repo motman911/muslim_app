@@ -8,6 +8,7 @@ import '../../features/qibla/presentation/pages/qibla_page.dart';
 import '../../features/quran/presentation/pages/audio_page.dart';
 import '../../features/quran/presentation/pages/bookmarks_page.dart';
 import '../../features/quran/presentation/pages/quran_page.dart';
+import '../../features/quran/presentation/pages/surah_reader_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../shared/providers/app_settings_providers.dart';
 import '../widgets/main_shell_scaffold.dart';
@@ -60,6 +61,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             pageBuilder: (context, state) => const NoTransitionPage(
               child: AudioPage(),
             ),
+          ),
+          GoRoute(
+            path: '/quran/surah/:surahId',
+            builder: (context, state) {
+              final surahIdRaw = state.pathParameters['surahId'] ?? '1';
+              final surahId = int.tryParse(surahIdRaw) ?? 1;
+              return SurahReaderPage(surahId: surahId);
+            },
           ),
           GoRoute(
             path: '/settings',

@@ -95,19 +95,21 @@ class QuranPage extends ConsumerWidget {
                       return SurahTile(
                         surah: surah,
                         onTap: () async {
-                          if (!firebaseReady || deviceId == null) {
-                            return;
+                          if (firebaseReady && deviceId != null) {
+                            await ref
+                                .read(readingProgressSyncServiceProvider)
+                                .syncLastRead(
+                                  surahNumber: surah.id,
+                                  ayahNumber: 1,
+                                  pageNumber: 1,
+                                  juzNumber: 1,
+                                  deviceId: deviceId,
+                                );
                           }
 
-                          await ref
-                              .read(readingProgressSyncServiceProvider)
-                              .syncLastRead(
-                                surahNumber: surah.id,
-                                ayahNumber: 1,
-                                pageNumber: 1,
-                                juzNumber: 1,
-                                deviceId: deviceId,
-                              );
+                          if (context.mounted) {
+                            context.push('/quran/surah/${surah.id}');
+                          }
                         },
                         onLongPress: () async {
                           if (!firebaseReady) {
