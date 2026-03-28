@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,6 +13,32 @@ import '../../features/quran/presentation/pages/surah_reading_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../shared/providers/app_settings_providers.dart';
 import '../widgets/main_shell_scaffold.dart';
+
+CustomTransitionPage<void> _buildTransitionPage(Widget child) {
+  return CustomTransitionPage<void>(
+    child: child,
+    transitionDuration: const Duration(milliseconds: 220),
+    reverseTransitionDuration: const Duration(milliseconds: 180),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final curved = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
+      );
+      final offsetTween = Tween<Offset>(
+        begin: const Offset(0.02, 0.0),
+        end: Offset.zero,
+      );
+      return FadeTransition(
+        opacity: curved,
+        child: SlideTransition(
+          position: offsetTween.animate(curved),
+          child: child,
+        ),
+      );
+    },
+  );
+}
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final onboardingSeen = ref.watch(onboardingControllerProvider);
@@ -28,53 +55,46 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         routes: [
           GoRoute(
             path: '/quran',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: QuranHomePage(),
-            ),
+            pageBuilder: (context, state) =>
+                _buildTransitionPage(const QuranHomePage()),
           ),
           GoRoute(
             path: '/audio',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: QuranRecitationsPage(),
-            ),
+            pageBuilder: (context, state) =>
+                _buildTransitionPage(const QuranRecitationsPage()),
           ),
           GoRoute(
             path: '/bookmarks',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: BookmarksPage(),
-            ),
+            pageBuilder: (context, state) =>
+                _buildTransitionPage(const BookmarksPage()),
           ),
           GoRoute(
             path: '/prayer-times',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: PrayerTimesPage(),
-            ),
+            pageBuilder: (context, state) =>
+                _buildTransitionPage(const PrayerTimesPage()),
           ),
           GoRoute(
             path: '/azkar',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: AzkarPage(),
-            ),
+            pageBuilder: (context, state) =>
+                _buildTransitionPage(const AzkarPage()),
           ),
           GoRoute(
             path: '/qibla',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: QiblaPage(),
-            ),
+            pageBuilder: (context, state) =>
+                _buildTransitionPage(const QiblaPage()),
           ),
           GoRoute(
             path: '/quran/surah/:surahId',
-            builder: (context, state) {
+            pageBuilder: (context, state) {
               final surahIdRaw = state.pathParameters['surahId'] ?? '1';
               final surahId = int.tryParse(surahIdRaw) ?? 1;
-              return SurahReadingPage(surahId: surahId);
+              return _buildTransitionPage(SurahReadingPage(surahId: surahId));
             },
           ),
           GoRoute(
             path: '/settings',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: SettingsPage(),
-            ),
+            pageBuilder: (context, state) =>
+                _buildTransitionPage(const SettingsPage()),
           ),
         ],
       ),

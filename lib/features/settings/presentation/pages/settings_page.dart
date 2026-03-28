@@ -15,6 +15,7 @@ class SettingsPage extends ConsumerWidget {
     final l10n = context.l10n;
     final themeMode = ref.watch(themeModeControllerProvider);
     final locale = ref.watch(localeControllerProvider);
+    final textScale = ref.watch(textScaleControllerProvider);
     final authState = ref.watch(authStateProvider);
     final authAction = ref.watch(authActionControllerProvider);
 
@@ -153,6 +154,37 @@ class SettingsPage extends ConsumerWidget {
                         .read(themeModeControllerProvider.notifier)
                         .setThemeMode(selected.first);
                   },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          NoorCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.tr('textSize'),
+                    style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Text(l10n.tr('textSizeSmall')),
+                    Expanded(
+                      child: Slider(
+                        min: 0.9,
+                        max: 1.3,
+                        divisions: 4,
+                        value: textScale,
+                        label: textScale.toStringAsFixed(2),
+                        onChanged: (value) {
+                          ref
+                              .read(textScaleControllerProvider.notifier)
+                              .setScale(value);
+                        },
+                      ),
+                    ),
+                    Text(l10n.tr('textSizeLarge')),
+                  ],
                 ),
               ],
             ),

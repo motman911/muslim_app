@@ -9,6 +9,7 @@ final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
 final initialThemeModeProvider = Provider<ThemeMode>((ref) => ThemeMode.system);
 final initialLocaleProvider = Provider<Locale>((ref) => const Locale('ar'));
 final initialOnboardingSeenProvider = Provider<bool>((ref) => false);
+final initialTextScaleProvider = Provider<double>((ref) => 1.0);
 
 final themeModeControllerProvider =
     StateNotifierProvider<ThemeModeController, ThemeMode>(
@@ -31,6 +32,14 @@ final onboardingControllerProvider =
   (ref) => OnboardingController(
     prefs: ref.watch(sharedPreferencesProvider),
     initialSeen: ref.watch(initialOnboardingSeenProvider),
+  ),
+);
+
+final textScaleControllerProvider =
+    StateNotifierProvider<TextScaleController, double>(
+  (ref) => TextScaleController(
+    prefs: ref.watch(sharedPreferencesProvider),
+    initialScale: ref.watch(initialTextScaleProvider),
   ),
 );
 
@@ -94,5 +103,29 @@ class OnboardingController extends StateNotifier<bool> {
   Future<void> complete() async {
     state = true;
     await _prefs.setBool(storageKey, true);
+  }
+}
+
+class TextScaleController extends StateNotifier<double> {
+  TextScaleController({
+    required SharedPreferences prefs,
+    required double initialScale,
+  })  : _prefs = prefs,
+        super(initialScale);
+
+  static const storageKey = 'app_text_scale';
+  final SharedPreferences _prefs;
+
+  static double fromStorage(double? value) {
+    if (value == null) {
+      return 1.0;
+    }
+    return value.clamp(0.9, 1.3);
+  }
+
+  Future<void> setScale(double scale) async {
+    final next = scale.clamp(0.9, 1.3);
+    state = next;
+    await _prefs.setDouble(storageKey, next);
   }
 }

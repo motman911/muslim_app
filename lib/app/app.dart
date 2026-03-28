@@ -52,6 +52,7 @@ class _NoorAppState extends ConsumerState<NoorApp> {
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeControllerProvider);
     final locale = ref.watch(localeControllerProvider);
+    final textScale = ref.watch(textScaleControllerProvider);
     final router = ref.watch(appRouterProvider);
 
     return MaterialApp.router(
@@ -68,6 +69,13 @@ class _NoorAppState extends ConsumerState<NoorApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      builder: (context, child) {
+        final mediaQuery = MediaQuery.of(context);
+        return MediaQuery(
+          data: mediaQuery.copyWith(textScaler: TextScaler.linear(textScale)),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
       routerConfig: router,
     );
   }
