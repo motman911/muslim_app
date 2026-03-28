@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/color_scheme.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../shared/providers/firebase_providers.dart';
+import '../../../../shared/widgets/noor_card.dart';
 import '../providers/quran_providers.dart';
 import '../widgets/surah_tile.dart';
 
@@ -23,6 +25,16 @@ class QuranPage extends ConsumerWidget {
         title: Text(l10n.tr('quran')),
         actions: [
           IconButton(
+            onPressed: () {
+              ref.invalidate(surahsProvider);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.tr('quranRefreshed'))),
+              );
+            },
+            icon: const Icon(Icons.sync_rounded),
+            tooltip: l10n.tr('refreshQuran'),
+          ),
+          IconButton(
             onPressed: () => context.push('/bookmarks'),
             icon: const Icon(Icons.bookmarks_rounded),
           ),
@@ -31,25 +43,34 @@ class QuranPage extends ConsumerWidget {
       body: Column(
         children: [
           const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: TextField(
-              onChanged: (value) {
-                ref.read(surahSearchTextProvider.notifier).state = value;
-              },
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search_rounded),
-                hintText: l10n.tr('searchSurah'),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
+          NoorCard(
+            margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: Column(
               children: [
-                const Icon(Icons.offline_bolt_rounded, size: 18),
-                const SizedBox(width: 8),
-                Text(l10n.tr('offlineReady')),
+                TextField(
+                  onChanged: (value) {
+                    ref.read(surahSearchTextProvider.notifier).state = value;
+                  },
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.search_rounded),
+                    hintText: l10n.tr('searchSurah'),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: const BoxDecoration(
+                        color: AppColors.greenPrimary,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(l10n.tr('offlineReady')),
+                  ],
+                ),
               ],
             ),
           ),
@@ -60,56 +81,64 @@ class QuranPage extends ConsumerWidget {
                   return Center(child: Text(l10n.tr('noResults')));
                 }
 
-                return ListView.builder(
-                  itemCount: surahs.length,
-                  itemBuilder: (context, index) {
-                    final surah = surahs[index];
-                    final isCurrent = audioState.currentSurahId == surah.id;
-
-                    return SurahTile(
-                      surah: surah,
-                      onTap: () async {
-                        if (!firebaseReady || deviceId == null) {
-                          return;
-                        }
-
-                        await ref
-                            .read(readingProgressSyncServiceProvider)
-                            .syncLastRead(
-                              surahNumber: surah.id,
-                              ayahNumber: 1,
-                              pageNumber: 1,
-                              juzNumber: 1,
-                              deviceId: deviceId,
-                            );
-                      },
-                      onLongPress: () async {
-                        if (!firebaseReady) {
-                          return;
-                        }
-
-                        await ref.read(bookmarkSyncServiceProvider).addBookmark(
-                              type: 'ayah',
-                              surahNumber: surah.id,
-                              ayahNumber: 1,
-                            );
-
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(l10n.tr('bookmarkSaved'))),
-                          );
-                        }
-                      },
-                      isCurrent: isCurrent,
-                      isPlaying: audioState.isPlaying,
-                      isLoading: audioState.isLoading,
-                      onPlayPressed: () {
-                        ref
-                            .read(quranAudioControllerProvider.notifier)
-                            .toggleSurah(surah);
-                      },
-                    );
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    ref.invalidate(surahsProvider);
+                    await ref.read(surahsProvider.future);
                   },
+                  child: ListView.builder(
+                    itemCount: surahs.length,
+                    itemBuilder: (context, index) {
+                      final surah = surahs[index];
+                      final isCurrent = audioState.currentSurahId == surah.id;
+
+                      return SurahTile(
+                        surah: surah,
+                        onTap: () async {
+                          if (!firebaseReady || deviceId == null) {
+                            return;
+                          }
+
+                          await ref
+                              .read(readingProgressSyncServiceProvider)
+                              .syncLastRead(
+                                surahNumber: surah.id,
+                                ayahNumber: 1,
+                                pageNumber: 1,
+                                juzNumber: 1,
+                                deviceId: deviceId,
+                              );
+                        },
+                        onLongPress: () async {
+                          if (!firebaseReady) {
+                            return;
+                          }
+
+                          await ref
+                              .read(bookmarkSyncServiceProvider)
+                              .addBookmark(
+                                type: 'ayah',
+                                surahNumber: surah.id,
+                                ayahNumber: 1,
+                              );
+
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(l10n.tr('bookmarkSaved'))),
+                            );
+                          }
+                        },
+                        isCurrent: isCurrent,
+                        isPlaying: audioState.isPlaying,
+                        isLoading: audioState.isLoading,
+                        onPlayPressed: () {
+                          ref
+                              .read(quranAudioControllerProvider.notifier)
+                              .toggleSurah(surah);
+                        },
+                      );
+                    },
+                  ),
                 );
               },
               error: (error, stackTrace) =>
@@ -118,14 +147,13 @@ class QuranPage extends ConsumerWidget {
             ),
           ),
           if (audioState.currentSurahId != null)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              ),
+            NoorCard(
+              margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              highlight: true,
               child: Row(
                 children: [
-                  const Icon(Icons.graphic_eq_rounded),
+                  const Icon(Icons.graphic_eq_rounded,
+                      color: AppColors.goldPrimary),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(

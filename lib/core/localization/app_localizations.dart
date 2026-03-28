@@ -65,6 +65,8 @@ class AppLocalizations {
       'bookmarkDeleted': 'تم حذف الإشارة المرجعية',
       'surah': 'السورة',
       'ayah': 'الآية',
+      'refreshQuran': 'تحديث بيانات القرآن',
+      'quranRefreshed': 'تم تحديث قائمة السور',
     },
     'en': {
       'appName': 'Noor',
@@ -110,6 +112,8 @@ class AppLocalizations {
       'bookmarkDeleted': 'Bookmark deleted',
       'surah': 'Surah',
       'ayah': 'Ayah',
+      'refreshQuran': 'Refresh Quran data',
+      'quranRefreshed': 'Surahs list refreshed',
     },
     'fr': {
       'appName': 'Noor',
@@ -156,6 +160,8 @@ class AppLocalizations {
       'bookmarkDeleted': 'Signet supprime',
       'surah': 'Sourate',
       'ayah': 'Verset',
+      'refreshQuran': 'Actualiser les donnees du Coran',
+      'quranRefreshed': 'Liste des sourates mise a jour',
     },
   };
 

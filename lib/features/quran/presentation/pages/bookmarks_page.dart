@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../shared/providers/firebase_providers.dart';
+import '../../../../shared/widgets/noor_card.dart';
 
 final bookmarksProvider =
     FutureProvider<List<Map<String, dynamic>>>((ref) async {
@@ -28,8 +29,9 @@ class BookmarksPage extends ConsumerWidget {
           }
 
           return ListView.separated(
+            padding: const EdgeInsets.only(top: 8, bottom: 16),
             itemCount: bookmarks.length,
-            separatorBuilder: (_, __) => const Divider(height: 1),
+            separatorBuilder: (_, __) => const SizedBox(height: 0),
             itemBuilder: (context, index) {
               final item = bookmarks[index];
               final id = item['id'] as String? ?? '';
@@ -37,24 +39,40 @@ class BookmarksPage extends ConsumerWidget {
               final ayah = item['ayahNumber']?.toString() ?? '-';
               final type = item['type']?.toString() ?? 'ayah';
 
-              return ListTile(
-                leading: const Icon(Icons.bookmark_rounded),
-                title: Text(
-                    '${l10n.tr('surah')}: $surah - ${l10n.tr('ayah')}: $ayah'),
-                subtitle: Text(type),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete_outline_rounded),
-                  onPressed: () async {
-                    await ref
-                        .read(bookmarkSyncServiceProvider)
-                        .removeBookmark(id);
-                    ref.invalidate(bookmarksProvider);
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(l10n.tr('bookmarkDeleted'))),
-                      );
-                    }
-                  },
+              return NoorCard(
+                child: Row(
+                  children: [
+                    const Icon(Icons.bookmark_rounded),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${l10n.tr('surah')}: $surah - ${l10n.tr('ayah')}: $ayah',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(type,
+                              style: Theme.of(context).textTheme.bodyMedium),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline_rounded),
+                      onPressed: () async {
+                        await ref
+                            .read(bookmarkSyncServiceProvider)
+                            .removeBookmark(id);
+                        ref.invalidate(bookmarksProvider);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(l10n.tr('bookmarkDeleted'))),
+                          );
+                        }
+                      },
+                    ),
+                  ],
                 ),
               );
             },

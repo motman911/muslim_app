@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/color_scheme.dart';
+import '../../../../shared/widgets/noor_card.dart';
 import '../../domain/entities/surah_entity.dart';
 
 class SurahTile extends StatelessWidget {
@@ -24,32 +26,68 @@ class SurahTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     final isMakki = surah.revelationType.toLowerCase() == 'makki';
 
-    return Card(
-      child: ListTile(
+    return NoorCard(
+      highlight: isCurrent,
+      child: InkWell(
         onTap: onTap,
         onLongPress: onLongPress,
-        leading: CircleAvatar(
-          child: Text(surah.id.toString()),
-        ),
-        title: Text(
-          surah.arabicName,
-          style: const TextStyle(fontFamily: 'Amiri', fontSize: 22),
-        ),
-        subtitle: Text('${surah.englishName} - ${surah.ayahCount}'),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
+        borderRadius: BorderRadius.circular(16),
+        child: Row(
           children: [
-            Icon(
-              isMakki ? Icons.nights_stay_rounded : Icons.location_city_rounded,
+            Container(
+              width: 42,
+              height: 42,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.goldSubtle,
+                border: Border.all(color: AppColors.borderActive),
+              ),
+              child: Text(
+                surah.id.toString().padLeft(2, '0'),
+                style: textTheme.bodyMedium?.copyWith(
+                  color: AppColors.goldPrimary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    surah.arabicName,
+                    style: const TextStyle(
+                      fontFamily: 'Amiri',
+                      fontSize: 22,
+                      color: AppColors.goldPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${surah.englishName} • ${surah.ayahCount}',
+                    style: textTheme.bodyMedium,
+                  ),
+                ],
+              ),
             ),
             const SizedBox(width: 8),
+            Icon(
+              isMakki ? Icons.nights_stay_rounded : Icons.location_city_rounded,
+              size: 18,
+            ),
             if (isCurrent && isLoading)
-              const SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(strokeWidth: 2),
+              const Padding(
+                padding: EdgeInsets.only(left: 8),
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
               )
             else
               IconButton(

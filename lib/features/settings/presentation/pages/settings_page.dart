@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../shared/providers/app_settings_providers.dart';
 import '../../../../shared/providers/firebase_providers.dart';
+import '../../../../shared/widgets/noor_button.dart';
+import '../../../../shared/widgets/noor_card.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -24,100 +26,102 @@ class SettingsPage extends ConsumerWidget {
           Text(l10n.tr('account'),
               style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: authState.when(
-                data: (user) {
-                  final email = user?.email;
-                  final isAnonymous = user?.isAnonymous ?? true;
-                  final label = email ?? l10n.tr('anonymousUser');
+          NoorCard(
+            child: authState.when(
+              data: (user) {
+                final email = user?.email;
+                final isAnonymous = user?.isAnonymous ?? true;
+                final label = email ?? l10n.tr('anonymousUser');
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('${l10n.tr('signedInAs')}: $label'),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          ElevatedButton(
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('${l10n.tr('signedInAs')}: $label'),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        NoorButton(
+                          style: NoorButtonStyle.primary,
+                          label: l10n.tr('signInGoogle'),
+                          onPressed: authAction.isLoading
+                              ? null
+                              : () {
+                                  ref
+                                      .read(
+                                          authActionControllerProvider.notifier)
+                                      .signInWithGoogle();
+                                },
+                        ),
+                        NoorButton(
+                          style: NoorButtonStyle.secondary,
+                          label: l10n.tr('signInApple'),
+                          onPressed: authAction.isLoading
+                              ? null
+                              : () {
+                                  ref
+                                      .read(
+                                          authActionControllerProvider.notifier)
+                                      .signInWithApple();
+                                },
+                        ),
+                        NoorButton(
+                          style: NoorButtonStyle.secondary,
+                          label: l10n.tr('signInEmail'),
+                          onPressed: authAction.isLoading
+                              ? null
+                              : () {
+                                  _showEmailAuthDialog(
+                                    context: context,
+                                    ref: ref,
+                                    isSignUp: false,
+                                  );
+                                },
+                        ),
+                        NoorButton(
+                          style: NoorButtonStyle.secondary,
+                          label: l10n.tr('createAccountEmail'),
+                          onPressed: authAction.isLoading
+                              ? null
+                              : () {
+                                  _showEmailAuthDialog(
+                                    context: context,
+                                    ref: ref,
+                                    isSignUp: true,
+                                  );
+                                },
+                        ),
+                        if (!isAnonymous)
+                          NoorButton(
+                            style: NoorButtonStyle.ghost,
+                            label: l10n.tr('signOut'),
                             onPressed: authAction.isLoading
                                 ? null
                                 : () {
                                     ref
                                         .read(authActionControllerProvider
                                             .notifier)
-                                        .signInWithGoogle();
+                                        .signOutAndFallbackAnonymous();
                                   },
-                            child: Text(l10n.tr('signInGoogle')),
                           ),
-                          OutlinedButton(
-                            onPressed: authAction.isLoading
-                                ? null
-                                : () {
-                                    ref
-                                        .read(authActionControllerProvider
-                                            .notifier)
-                                        .signInWithApple();
-                                  },
-                            child: Text(l10n.tr('signInApple')),
-                          ),
-                          OutlinedButton(
-                            onPressed: authAction.isLoading
-                                ? null
-                                : () {
-                                    _showEmailAuthDialog(
-                                      context: context,
-                                      ref: ref,
-                                      isSignUp: false,
-                                    );
-                                  },
-                            child: Text(l10n.tr('signInEmail')),
-                          ),
-                          OutlinedButton(
-                            onPressed: authAction.isLoading
-                                ? null
-                                : () {
-                                    _showEmailAuthDialog(
-                                      context: context,
-                                      ref: ref,
-                                      isSignUp: true,
-                                    );
-                                  },
-                            child: Text(l10n.tr('createAccountEmail')),
-                          ),
-                          if (!isAnonymous)
-                            TextButton(
-                              onPressed: authAction.isLoading
-                                  ? null
-                                  : () {
-                                      ref
-                                          .read(authActionControllerProvider
-                                              .notifier)
-                                          .signOutAndFallbackAnonymous();
-                                    },
-                              child: Text(l10n.tr('signOut')),
-                            ),
-                        ],
-                      ),
-                      if (authAction.hasError)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Text(
-                            authAction.error.toString(),
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.error,
-                            ),
+                      ],
+                    ),
+                    if (authAction.hasError)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          authAction.error.toString(),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
                           ),
                         ),
-                    ],
-                  );
-                },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stackTrace) => Text(error.toString()),
-              ),
+                      ),
+                  ],
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stackTrace) => Text(error.toString()),
             ),
           ),
           const SizedBox(height: 24),
