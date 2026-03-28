@@ -130,6 +130,11 @@ class AppLocalizations {
       'qiblaAlignmentExcellent': 'ممتاز',
       'qiblaAlignmentNeedsAdjust': 'يحتاج ضبط',
       'recalibrateQibla': 'إعادة معايرة القبلة',
+      'readingProgress': 'تقدم القراءة',
+      'jumpToAyah': 'الانتقال إلى آية',
+      'quickTools': 'أدوات سريعة',
+      'goToSelectedAyah': 'الانتقال للآية المحددة',
+      'markAsLastRead': 'تم تحديث آخر قراءة',
     },
     'en': {
       'appName': 'Noor',
@@ -243,6 +248,11 @@ class AppLocalizations {
       'qiblaAlignmentExcellent': 'Excellent',
       'qiblaAlignmentNeedsAdjust': 'Needs adjustment',
       'recalibrateQibla': 'Recalibrate qibla',
+      'readingProgress': 'Reading progress',
+      'jumpToAyah': 'Jump to ayah',
+      'quickTools': 'Quick tools',
+      'goToSelectedAyah': 'Go to selected ayah',
+      'markAsLastRead': 'Last read updated',
     },
     'fr': {
       'appName': 'Noor',
@@ -360,6 +370,11 @@ class AppLocalizations {
       'qiblaAlignmentExcellent': 'Excellent',
       'qiblaAlignmentNeedsAdjust': 'A ajuster',
       'recalibrateQibla': 'Recalibrer la qibla',
+      'readingProgress': 'Progression de lecture',
+      'jumpToAyah': 'Aller au verset',
+      'quickTools': 'Outils rapides',
+      'goToSelectedAyah': 'Aller au verset selectionne',
+      'markAsLastRead': 'Derniere lecture mise a jour',
     },
   };
 
