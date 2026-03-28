@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/localization/app_localizations.dart';
+import '../../../../shared/widgets/noor_card.dart';
 import '../providers/prayer_times_providers.dart';
 
 class PrayerTimesPage extends ConsumerWidget {
@@ -17,51 +18,64 @@ class PrayerTimesPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.tr('prayerTimes'))),
-      body: Column(
-        children: [
-          const SizedBox(height: 12),
-          Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            child: ListTile(
-              leading: const Icon(Icons.notifications_active_rounded),
-              title: Text(l10n.tr('nextPrayer')),
-              trailing: Text(todayLabel),
-              subtitle: nextPrayerAsync.when(
-                data: (nextPrayer) {
-                  if (nextPrayer == null) {
-                    return Text(l10n.tr('noRemainingPrayer'));
-                  }
-                  return Text(
-                    '${nextPrayer.name} - ${DateFormat.Hm().format(nextPrayer.time)}',
-                  );
-                },
-                error: (error, stackTrace) => Text(error.toString()),
-                loading: () => const Text('...'),
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Expanded(
-            child: timesAsync.when(
-              data: (times) {
-                return ListView.builder(
-                  itemCount: times.length,
-                  itemBuilder: (context, index) {
-                    final prayer = times[index];
-                    return ListTile(
-                      leading: const Icon(Icons.access_time_filled_rounded),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(todayPrayerTimesProvider);
+          await ref.read(todayPrayerTimesProvider.future);
+        },
+        child: timesAsync.when(
+          data: (times) {
+            return ListView(
+              padding: const EdgeInsets.only(top: 12, bottom: 12),
+              children: [
+                NoorCard(
+                  margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                  highlight: true,
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.notifications_active_rounded),
+                    title: Text(l10n.tr('nextPrayer')),
+                    trailing: Text(todayLabel),
+                    subtitle: nextPrayerAsync.when(
+                      data: (nextPrayer) {
+                        if (nextPrayer == null) {
+                          return Text(l10n.tr('noRemainingPrayer'));
+                        }
+                        return Text(
+                          '${nextPrayer.name} - ${DateFormat.Hm().format(nextPrayer.time)}',
+                        );
+                      },
+                      error: (error, stackTrace) => Text(error.toString()),
+                      loading: () => const Text('...'),
+                    ),
+                  ),
+                ),
+                ...times.map((prayer) {
+                  final isNext = nextPrayerAsync.value?.name == prayer.name;
+                  return NoorCard(
+                    margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                    highlight: isNext,
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Icon(
+                        isNext
+                            ? Icons.access_time_filled_rounded
+                            : Icons.access_time_rounded,
+                      ),
                       title: Text(prayer.name),
-                      trailing: Text(DateFormat.Hm().format(prayer.time)),
-                    );
-                  },
-                );
-              },
-              error: (error, stackTrace) =>
-                  Center(child: Text(error.toString())),
-              loading: () => const Center(child: CircularProgressIndicator()),
-            ),
-          ),
-        ],
+                      trailing: Text(
+                        DateFormat.Hm().format(prayer.time),
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ),
+                  );
+                }),
+              ],
+            );
+          },
+          error: (error, stackTrace) => Center(child: Text(error.toString())),
+          loading: () => const Center(child: CircularProgressIndicator()),
+        ),
       ),
     );
   }

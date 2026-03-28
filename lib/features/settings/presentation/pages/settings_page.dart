@@ -125,51 +125,66 @@ class SettingsPage extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 24),
-          Text(l10n.tr('theme'),
-              style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          SegmentedButton<ThemeMode>(
-            segments: [
-              ButtonSegment(
-                value: ThemeMode.system,
-                label: Text(l10n.tr('system')),
-              ),
-              ButtonSegment(
-                value: ThemeMode.light,
-                label: Text(l10n.tr('light')),
-              ),
-              ButtonSegment(
-                value: ThemeMode.dark,
-                label: Text(l10n.tr('dark')),
-              ),
-            ],
-            selected: {themeMode},
-            onSelectionChanged: (selected) {
-              ref
-                  .read(themeModeControllerProvider.notifier)
-                  .setThemeMode(selected.first);
-            },
+          NoorCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.tr('theme'),
+                    style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 8),
+                SegmentedButton<ThemeMode>(
+                  segments: [
+                    ButtonSegment(
+                      value: ThemeMode.system,
+                      label: Text(l10n.tr('system')),
+                    ),
+                    ButtonSegment(
+                      value: ThemeMode.light,
+                      label: Text(l10n.tr('light')),
+                    ),
+                    ButtonSegment(
+                      value: ThemeMode.dark,
+                      label: Text(l10n.tr('dark')),
+                    ),
+                  ],
+                  selected: {themeMode},
+                  onSelectionChanged: (selected) {
+                    ref
+                        .read(themeModeControllerProvider.notifier)
+                        .setThemeMode(selected.first);
+                  },
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 24),
-          Text(l10n.tr('language'),
-              style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          DropdownButtonFormField<String>(
-            initialValue: locale.languageCode,
-            decoration: const InputDecoration(border: OutlineInputBorder()),
-            items: const [
-              DropdownMenuItem(value: 'ar', child: Text('العربية')),
-              DropdownMenuItem(value: 'en', child: Text('English')),
-              DropdownMenuItem(value: 'fr', child: Text('Francais')),
-            ],
-            onChanged: (value) {
-              if (value == null) {
-                return;
-              }
-              ref
-                  .read(localeControllerProvider.notifier)
-                  .setLocale(Locale(value));
-            },
+          const SizedBox(height: 12),
+          NoorCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.tr('language'),
+                    style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 8),
+                DropdownButtonFormField<String>(
+                  initialValue: locale.languageCode,
+                  decoration:
+                      const InputDecoration(border: OutlineInputBorder()),
+                  items: const [
+                    DropdownMenuItem(value: 'ar', child: Text('العربية')),
+                    DropdownMenuItem(value: 'en', child: Text('English')),
+                    DropdownMenuItem(value: 'fr', child: Text('Francais')),
+                  ],
+                  onChanged: (value) {
+                    if (value == null) {
+                      return;
+                    }
+                    ref
+                        .read(localeControllerProvider.notifier)
+                        .setLocale(Locale(value));
+                  },
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -210,7 +225,7 @@ class SettingsPage extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: Text(l10n.tr('cancel')),
             ),
             ElevatedButton(
               onPressed: () async {

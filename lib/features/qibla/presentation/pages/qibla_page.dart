@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_qiblah/flutter_qiblah.dart';
 import 'package:geolocator/geolocator.dart';
 
+import '../../../../core/constants/color_scheme.dart';
 import '../../../../core/localization/app_localizations.dart';
+import '../../../../shared/widgets/noor_card.dart';
 
 class QiblaPage extends StatefulWidget {
   const QiblaPage({super.key});
@@ -106,12 +108,14 @@ class _QiblaPageState extends State<QiblaPage> {
                 padding: const EdgeInsets.all(24),
                 child: Column(
                   children: [
-                    Text(
-                      l10n.tr('qiblaHint'),
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyLarge,
+                    NoorCard(
+                      margin: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+                      child: Text(
+                        l10n.tr('qiblaHint'),
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
                     ),
-                    const SizedBox(height: 16),
                     Expanded(
                       child: StreamBuilder<dynamic>(
                         stream: FlutterQiblah.qiblahStream,
@@ -125,34 +129,59 @@ class _QiblaPageState extends State<QiblaPage> {
                           final direction =
                               (data?.direction as num?)?.toDouble() ?? 0;
                           final qibla = (data?.qiblah as num?)?.toDouble() ?? 0;
+                          final delta =
+                              ((qibla - direction + 540) % 360 - 180).abs();
+                          final aligned = delta <= 10;
 
                           return Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    Transform.rotate(
-                                      angle: -direction * (math.pi / 180),
-                                      child: const Icon(
-                                        Icons.navigation_rounded,
-                                        size: 190,
+                                NoorCard(
+                                  margin: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                                  highlight: aligned,
+                                  child: Column(
+                                    children: [
+                                      Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          Transform.rotate(
+                                            angle: -direction * (math.pi / 180),
+                                            child: const Icon(
+                                              Icons.navigation_rounded,
+                                              size: 190,
+                                            ),
+                                          ),
+                                          Transform.rotate(
+                                            angle: -qibla * (math.pi / 180),
+                                            child: const Icon(
+                                              Icons.near_me_rounded,
+                                              size: 72,
+                                              color: Colors.green,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                    Transform.rotate(
-                                      angle: -qibla * (math.pi / 180),
-                                      child: const Icon(
-                                        Icons.near_me_rounded,
-                                        size: 72,
-                                        color: Colors.green,
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        '${l10n.tr('qiblaAngle')}: ${qibla.toStringAsFixed(1)}°',
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  '${l10n.tr('qiblaAngle')}: ${qibla.toStringAsFixed(1)}°',
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        aligned
+                                            ? l10n.tr('qiblaAligned')
+                                            : '${l10n.tr('qiblaAdjust')}: ${delta.toStringAsFixed(1)}°',
+                                        style: TextStyle(
+                                          color: aligned
+                                              ? AppColors.success
+                                              : Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
