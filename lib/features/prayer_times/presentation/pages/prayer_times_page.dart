@@ -41,8 +41,23 @@ class PrayerTimesPage extends ConsumerWidget {
                         if (nextPrayer == null) {
                           return Text(l10n.tr('noRemainingPrayer'));
                         }
-                        return Text(
-                          '${nextPrayer.name} - ${DateFormat.Hm().format(nextPrayer.time)}',
+
+                        final now = DateTime.now();
+                        final remaining = nextPrayer.time.difference(now);
+                        final remainingText = _formatDuration(remaining);
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${nextPrayer.name} - ${DateFormat.Hm().format(nextPrayer.time)}',
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              '${l10n.tr('timeRemaining')}: $remainingText',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          ],
                         );
                       },
                       error: (error, stackTrace) => Text(error.toString()),
@@ -78,5 +93,14 @@ class PrayerTimesPage extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  String _formatDuration(Duration duration) {
+    if (duration.isNegative) {
+      return '00:00';
+    }
+    final hours = duration.inHours.toString().padLeft(2, '0');
+    final minutes = (duration.inMinutes % 60).toString().padLeft(2, '0');
+    return '$hours:$minutes';
   }
 }

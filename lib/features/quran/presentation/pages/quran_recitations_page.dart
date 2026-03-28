@@ -16,6 +16,7 @@ class QuranRecitationsPage extends ConsumerStatefulWidget {
 
 class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
   late String _selectedReciterId;
+  String _searchText = '';
 
   @override
   void initState() {
@@ -39,39 +40,68 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
         children: [
           NoorCard(
             margin: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-            child: DropdownButtonFormField<String>(
-              initialValue: _selectedReciterId,
-              decoration: InputDecoration(
-                labelText: l10n.tr('reciter'),
-                border: const OutlineInputBorder(),
-              ),
-              items: QuranAudioService.reciters
-                  .map(
-                    (reciter) => DropdownMenuItem<String>(
-                      value: reciter.id,
-                      child: Text(reciter.name),
-                    ),
-                  )
-                  .toList(),
-              onChanged: (value) {
-                if (value == null) {
-                  return;
-                }
-                setState(() {
-                  _selectedReciterId = value;
-                });
-              },
+            child: Column(
+              children: [
+                DropdownButtonFormField<String>(
+                  initialValue: _selectedReciterId,
+                  decoration: InputDecoration(
+                    labelText: l10n.tr('reciter'),
+                    border: const OutlineInputBorder(),
+                  ),
+                  items: QuranAudioService.reciters
+                      .map(
+                        (reciter) => DropdownMenuItem<String>(
+                          value: reciter.id,
+                          child: Text(reciter.name),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    if (value == null) {
+                      return;
+                    }
+                    setState(() {
+                      _selectedReciterId = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      _searchText = value.trim().toLowerCase();
+                    });
+                  },
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.search_rounded),
+                    hintText: l10n.tr('searchSurah'),
+                  ),
+                ),
+              ],
             ),
           ),
           if (audioState.isLoading) const LinearProgressIndicator(minHeight: 2),
           Expanded(
             child: surahsAsync.when(
               data: (surahs) {
+                final filteredSurahs = surahs.where((surah) {
+                  if (_searchText.isEmpty) {
+                    return true;
+                  }
+
+                  return surah.arabicName.toLowerCase().contains(_searchText) ||
+                      surah.englishName.toLowerCase().contains(_searchText);
+                }).toList();
+
+                if (filteredSurahs.isEmpty) {
+                  return Center(child: Text(l10n.tr('noResults')));
+                }
+
                 return ListView.separated(
-                  itemCount: surahs.length,
+                  itemCount: filteredSurahs.length,
                   separatorBuilder: (_, __) => const Divider(height: 1),
                   itemBuilder: (context, index) {
-                    final surah = surahs[index];
+                    final surah = filteredSurahs[index];
                     final isCurrent = audioState.currentSurahId == surah.id;
                     final isPlayingCurrent = isCurrent && audioState.isPlaying;
 

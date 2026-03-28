@@ -19,6 +19,8 @@ class QuranHomePage extends ConsumerWidget {
     final audioState = ref.watch(quranAudioControllerProvider);
     final firebaseReady = ref.watch(firebaseReadyProvider);
     final deviceId = ref.watch(deviceIdProvider);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
@@ -44,6 +46,62 @@ class QuranHomePage extends ConsumerWidget {
       body: Column(
         children: [
           const SizedBox(height: 8),
+          NoorCard(
+            margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            padding: EdgeInsets.zero,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: isDark
+                    ? AppGradients.heroCardGradient
+                    : const LinearGradient(
+                        colors: [Color(0xFFEAF5F0), Color(0xFFDDEDE5)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.tr('quranHeroTitle'),
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      color: isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.lightTextPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    l10n.tr('quranHeroSubtitle'),
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: isDark
+                          ? AppColors.darkTextSecondary
+                          : AppColors.lightTextSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      FilledButton.icon(
+                        onPressed: () => context.push('/audio'),
+                        icon: const Icon(Icons.play_circle_rounded),
+                        label: Text(l10n.tr('openRecitations')),
+                      ),
+                      OutlinedButton.icon(
+                        onPressed: () => context.push('/bookmarks'),
+                        icon: const Icon(Icons.bookmarks_rounded),
+                        label: Text(l10n.tr('bookmarks')),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
           NoorCard(
             margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             child: Column(

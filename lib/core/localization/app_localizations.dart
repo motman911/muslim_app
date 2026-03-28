@@ -118,6 +118,10 @@ class AppLocalizations {
       'refreshQuran': 'تحديث بيانات القرآن',
       'quranRefreshed': 'تم تحديث قائمة السور',
       'readSurah': 'قراءة السورة',
+      'quranHeroTitle': 'رحلة قرآنية يومية',
+      'quranHeroSubtitle': 'ابدأ القراءة أو استكملها مع تجربة صوتية سلسة.',
+      'openRecitations': 'فتح التلاوات',
+      'timeRemaining': 'الوقت المتبقي',
     },
     'en': {
       'appName': 'Noor',
@@ -218,6 +222,11 @@ class AppLocalizations {
       'refreshQuran': 'Refresh Quran data',
       'quranRefreshed': 'Surahs list refreshed',
       'readSurah': 'Read surah',
+      'quranHeroTitle': 'Your Daily Quran Journey',
+      'quranHeroSubtitle':
+          'Continue reading with focused visuals and smooth audio playback.',
+      'openRecitations': 'Open recitations',
+      'timeRemaining': 'Time remaining',
     },
     'fr': {
       'appName': 'Noor',
@@ -322,6 +331,11 @@ class AppLocalizations {
       'refreshQuran': 'Actualiser les donnees du Coran',
       'quranRefreshed': 'Liste des sourates mise a jour',
       'readSurah': 'Lire la sourate',
+      'quranHeroTitle': 'Votre parcours coranique quotidien',
+      'quranHeroSubtitle':
+          'Reprenez la lecture avec une interface claire et une ecoute fluide.',
+      'openRecitations': 'Ouvrir les recitations',
+      'timeRemaining': 'Temps restant',
     },
   };
 
