@@ -40,6 +40,10 @@ Future<void> main() async {
   final textScaleRaw = prefs.getDouble(TextScaleController.storageKey);
   final lineHeightRaw = prefs.getDouble(LineHeightController.storageKey);
   final highContrastRaw = prefs.getBool(HighContrastController.storageKey);
+  final accessibilityGuideShownRaw =
+      prefs.getBool(AccessibilityGuideShownController.storageKey);
+  final accessibilityGuideDisabledRaw =
+      prefs.getBool(AccessibilityGuideDisabledController.storageKey);
   final onboardingSeen =
       prefs.getBool(OnboardingController.storageKey) ?? false;
   final firebaseBootstrap = await FirebaseBootstrapService().initialize(prefs);
@@ -62,6 +66,16 @@ Future<void> main() async {
         ),
         initialHighContrastProvider.overrideWithValue(
           HighContrastController.fromStorage(highContrastRaw),
+        ),
+        initialAccessibilityGuideShownProvider.overrideWithValue(
+          AccessibilityGuideShownController.fromStorage(
+            accessibilityGuideShownRaw,
+          ),
+        ),
+        initialAccessibilityGuideDisabledProvider.overrideWithValue(
+          AccessibilityGuideDisabledController.fromStorage(
+            accessibilityGuideDisabledRaw,
+          ),
         ),
         initialOnboardingSeenProvider.overrideWithValue(onboardingSeen),
         firebaseReadyProvider.overrideWithValue(firebaseBootstrap.isReady),

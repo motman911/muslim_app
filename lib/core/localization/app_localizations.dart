@@ -73,6 +73,7 @@ class AppLocalizations {
       'previous': 'السابق',
       'done': 'تم',
       'applyRecommendedNow': 'تطبيق الإعداد الموصى به الآن',
+      'dontShowGuideAgain': 'لا تظهر هذا الدليل مرة أخرى تلقائيًا',
       'preview': 'معاينة مباشرة',
       'previewBody':
           'بسم الله الرحمن الرحيم. هذا مثال يوضح شكل النص الحالي حسب إعداداتك.',
@@ -170,6 +171,7 @@ class AppLocalizations {
       'previous': 'Previous',
       'done': 'Done',
       'applyRecommendedNow': 'Apply recommended now',
+      'dontShowGuideAgain': 'Do not auto-show this guide again',
       'preview': 'Live preview',
       'previewBody':
           'In the name of Allah, the Most Merciful. This sample reflects your current reading settings.',
@@ -272,6 +274,7 @@ class AppLocalizations {
       'previous': 'Precedent',
       'done': 'Termine',
       'applyRecommendedNow': 'Appliquer le profil recommande',
+      'dontShowGuideAgain': 'Ne plus afficher automatiquement ce guide',
       'preview': 'Apercu en direct',
       'previewBody':
           'Au nom d Allah, le Tout Misericordieux. Cet exemple montre vos reglages de lecture actuels.',

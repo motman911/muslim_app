@@ -7,11 +7,41 @@ import '../../../../shared/providers/firebase_providers.dart';
 import '../../../../shared/widgets/noor_button.dart';
 import '../../../../shared/widgets/noor_card.dart';
 
-class SettingsPage extends ConsumerWidget {
+class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends ConsumerState<SettingsPage> {
+  bool _checkedAutoGuide = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _maybeShowAccessibilityGuideOnFirstOpen();
+    });
+  }
+
+  Future<void> _maybeShowAccessibilityGuideOnFirstOpen() async {
+    if (!mounted || _checkedAutoGuide) {
+      return;
+    }
+
+    _checkedAutoGuide = true;
+    final hasShown = ref.read(accessibilityGuideShownControllerProvider);
+    final isDisabled = ref.read(accessibilityGuideDisabledControllerProvider);
+    if (hasShown || isDisabled) {
+      return;
+    }
+
+    await _showAccessibilityGuide(context: context, ref: ref, isAutoOpen: true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final themeMode = ref.watch(themeModeControllerProvider);
     final locale = ref.watch(localeControllerProvider);
@@ -312,7 +342,11 @@ class SettingsPage extends ConsumerWidget {
               subtitle: Text(l10n.tr('accessibilityGuideSubtitle')),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () {
-                _showAccessibilityGuide(context: context, ref: ref);
+                _showAccessibilityGuide(
+                  context: context,
+                  ref: ref,
+                  isAutoOpen: false,
+                );
               },
             ),
           ),
@@ -558,6 +592,7 @@ class SettingsPage extends ConsumerWidget {
   Future<void> _showAccessibilityGuide({
     required BuildContext context,
     required WidgetRef ref,
+    required bool isAutoOpen,
   }) async {
     final l10n = context.l10n;
 
@@ -577,6 +612,7 @@ class SettingsPage extends ConsumerWidget {
     ];
 
     int currentStep = 0;
+    bool disableGuidePrompts = false;
 
     await showDialog<void>(
       context: context,
@@ -604,6 +640,18 @@ class SettingsPage extends ConsumerWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(step.body),
+                  const SizedBox(height: 10),
+                  CheckboxListTile.adaptive(
+                    contentPadding: EdgeInsets.zero,
+                    controlAffinity: ListTileControlAffinity.leading,
+                    value: disableGuidePrompts,
+                    onChanged: (value) {
+                      setState(() {
+                        disableGuidePrompts = value ?? false;
+                      });
+                    },
+                    title: Text(l10n.tr('dontShowGuideAgain')),
+                  ),
                 ],
               ),
               actions: [
@@ -648,5 +696,21 @@ class SettingsPage extends ConsumerWidget {
         );
       },
     );
+
+    if (!mounted) {
+      return;
+    }
+
+    if (isAutoOpen) {
+      await ref
+          .read(accessibilityGuideShownControllerProvider.notifier)
+          .markShown();
+    }
+
+    if (disableGuidePrompts) {
+      await ref
+          .read(accessibilityGuideDisabledControllerProvider.notifier)
+          .setDisabled(true);
+    }
   }
 }

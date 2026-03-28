@@ -12,6 +12,9 @@ final initialOnboardingSeenProvider = Provider<bool>((ref) => false);
 final initialTextScaleProvider = Provider<double>((ref) => 1.0);
 final initialLineHeightProvider = Provider<double>((ref) => 1.5);
 final initialHighContrastProvider = Provider<bool>((ref) => false);
+final initialAccessibilityGuideShownProvider = Provider<bool>((ref) => false);
+final initialAccessibilityGuideDisabledProvider =
+    Provider<bool>((ref) => false);
 
 final themeModeControllerProvider =
     StateNotifierProvider<ThemeModeController, ThemeMode>(
@@ -58,6 +61,22 @@ final highContrastControllerProvider =
   (ref) => HighContrastController(
     prefs: ref.watch(sharedPreferencesProvider),
     initialValue: ref.watch(initialHighContrastProvider),
+  ),
+);
+
+final accessibilityGuideShownControllerProvider =
+    StateNotifierProvider<AccessibilityGuideShownController, bool>(
+  (ref) => AccessibilityGuideShownController(
+    prefs: ref.watch(sharedPreferencesProvider),
+    initialValue: ref.watch(initialAccessibilityGuideShownProvider),
+  ),
+);
+
+final accessibilityGuideDisabledControllerProvider =
+    StateNotifierProvider<AccessibilityGuideDisabledController, bool>(
+  (ref) => AccessibilityGuideDisabledController(
+    prefs: ref.watch(sharedPreferencesProvider),
+    initialValue: ref.watch(initialAccessibilityGuideDisabledProvider),
   ),
 );
 
@@ -187,5 +206,44 @@ class HighContrastController extends StateNotifier<bool> {
   Future<void> setEnabled(bool enabled) async {
     state = enabled;
     await _prefs.setBool(storageKey, enabled);
+  }
+}
+
+class AccessibilityGuideShownController extends StateNotifier<bool> {
+  AccessibilityGuideShownController({
+    required SharedPreferences prefs,
+    required bool initialValue,
+  })  : _prefs = prefs,
+        super(initialValue);
+
+  static const storageKey = 'accessibility_guide_shown_once';
+  final SharedPreferences _prefs;
+
+  static bool fromStorage(bool? value) => value ?? false;
+
+  Future<void> markShown() async {
+    if (state) {
+      return;
+    }
+    state = true;
+    await _prefs.setBool(storageKey, true);
+  }
+}
+
+class AccessibilityGuideDisabledController extends StateNotifier<bool> {
+  AccessibilityGuideDisabledController({
+    required SharedPreferences prefs,
+    required bool initialValue,
+  })  : _prefs = prefs,
+        super(initialValue);
+
+  static const storageKey = 'accessibility_guide_disabled';
+  final SharedPreferences _prefs;
+
+  static bool fromStorage(bool? value) => value ?? false;
+
+  Future<void> setDisabled(bool disabled) async {
+    state = disabled;
+    await _prefs.setBool(storageKey, disabled);
   }
 }
