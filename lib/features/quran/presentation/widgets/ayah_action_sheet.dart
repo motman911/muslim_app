@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../shared/widgets/noor_card.dart';
@@ -25,7 +26,7 @@ Future<void> showAyahActionSheet(
       return DefaultTabController(
         length: tabs.length,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.h),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,23 +40,23 @@ Future<void> showAyahActionSheet(
                   height: 2.0,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12.h),
               TabBar(
                 tabs: tabs.map((title) => Tab(text: title)).toList(),
               ),
               SizedBox(
-                height: 110,
+                height: 120.h,
                 child: TabBarView(
                   children: [
                     NoorCard(
-                      margin: const EdgeInsets.only(top: 10),
+                      margin: EdgeInsets.only(top: 10.h),
                       child: Text(
                         '${l10n.tr('translation')}: ${ayah.text}',
                         textAlign: TextAlign.right,
                       ),
                     ),
                     NoorCard(
-                      margin: const EdgeInsets.only(top: 10),
+                      margin: EdgeInsets.only(top: 10.h),
                       child: Text(
                         l10n.tr('tafsirUnavailableOffline'),
                         textAlign: TextAlign.right,
@@ -64,10 +65,10 @@ Future<void> showAyahActionSheet(
                   ],
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8.h),
               Wrap(
-                spacing: 8,
-                runSpacing: 8,
+                spacing: 8.w,
+                runSpacing: 8.h,
                 children: [
                   OutlinedButton.icon(
                     onPressed: () async {

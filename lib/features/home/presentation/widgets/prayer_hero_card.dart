@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -51,43 +52,44 @@ class _PrayerHeroCardState extends State<PrayerHeroCard> {
     final remaining = nextPrayer.time.difference(_now);
 
     return Container(
-      height: 220,
+      constraints: BoxConstraints(minHeight: 220.h),
       decoration: BoxDecoration(
         color: AppColors.darkBgElevated,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(24.r),
         border: Border.all(color: AppColors.borderActive, width: 1),
         boxShadow: [
           BoxShadow(
             color: AppColors.goldPrimary.withValues(alpha: 0.08),
-            blurRadius: 20,
+            blurRadius: 20.r,
             spreadRadius: 2,
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16.r),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text('الصلاة القادمة', style: AppTextStyles.caption),
-            const SizedBox(height: 4),
+            SizedBox(height: 4.h),
             Text(nextPrayer.slot.name, style: AppTextStyles.h1),
             Text(
               _formatTime(nextPrayer.time),
               style:
                   AppTextStyles.bodyMedium.copyWith(color: AppColors.textGold),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             Text(_formatRemaining(remaining), style: AppTextStyles.h2),
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
             LinearProgressIndicator(
-              minHeight: 4,
+              minHeight: 4.h,
               value: current.progress,
-              borderRadius: BorderRadius.circular(99),
+              borderRadius: BorderRadius.circular(99.r),
               color: AppColors.goldPrimary,
               backgroundColor: AppColors.darkSurface,
             ),
-            const Spacer(),
+            SizedBox(height: 10.h),
             Row(
               children: _slots.map((slot) {
                 final slotTime = _toToday(slot);
@@ -103,7 +105,7 @@ class _PrayerHeroCardState extends State<PrayerHeroCard> {
                               : AppColors.textSecondary,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      SizedBox(height: 2.h),
                       Text(
                         _formatTime(slotTime),
                         style: AppTextStyles.tiny.copyWith(
@@ -112,10 +114,10 @@ class _PrayerHeroCardState extends State<PrayerHeroCard> {
                               : AppColors.textPrimary,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      SizedBox(height: 2.h),
                       Icon(
                         isPast ? Icons.check_circle : Icons.circle_outlined,
-                        size: 14,
+                        size: 14.sp,
                         color: isPast
                             ? AppColors.greenPrimary
                             : AppColors.textMuted,

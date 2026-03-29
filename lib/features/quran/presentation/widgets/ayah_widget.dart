@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../data/models/ayah_model.dart';
@@ -24,15 +25,15 @@ class AyahWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(12.r),
       onTap: onTap,
       onLongPress: onLongPress,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
         decoration: BoxDecoration(
           color: highlight ? AppColors.goldSubtle : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,15 +43,15 @@ class AyahWidget extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'KFGQPCUthmanTahaHafs',
-                fontSize: fontSize,
+                fontSize: fontSize.sp,
                 height: lineHeight,
                 color: AppColors.textGold,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: 8.w,
+              runSpacing: 8.h,
               children: [
                 Chip(label: Text('آية ${ayah.ayahNumber}')),
                 Chip(label: Text('جزء ${ayah.juzNumber}')),

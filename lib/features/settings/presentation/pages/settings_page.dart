@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/providers/app_settings_providers.dart';
 import '../../../../shared/providers/firebase_providers.dart';
 import '../../../../shared/widgets/noor_button.dart';
@@ -54,12 +56,42 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.tr('settings'))),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 24.h),
         children: [
-          Text(l10n.tr('account'),
-              style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: _SettingStatCard(
+                  label: l10n.tr('textSize'),
+                  value: textScale.toStringAsFixed(2),
+                  icon: Icons.text_fields_rounded,
+                ),
+              ),
+              SizedBox(width: 8.w),
+              Expanded(
+                child: _SettingStatCard(
+                  label: l10n.tr('lineHeight'),
+                  value: lineHeight.toStringAsFixed(1),
+                  icon: Icons.format_line_spacing_rounded,
+                ),
+              ),
+              SizedBox(width: 8.w),
+              Expanded(
+                child: _SettingStatCard(
+                  label: l10n.tr('highContrast'),
+                  value: highContrast
+                      ? l10n.tr('highContrastEnabled')
+                      : l10n.tr('highContrastDisabled'),
+                  icon: Icons.contrast_rounded,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 16.h),
+          _sectionTitle(context, l10n.tr('account')),
+          SizedBox(height: 8.h),
           NoorCard(
+            margin: EdgeInsets.zero,
             child: authState.when(
               data: (user) {
                 final email = user?.email;
@@ -70,10 +102,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('${l10n.tr('signedInAs')}: $label'),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8.h),
                     Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
+                      spacing: 8.w,
+                      runSpacing: 8.h,
                       children: [
                         NoorButton(
                           style: NoorButtonStyle.primary,
@@ -142,7 +174,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     ),
                     if (authAction.hasError)
                       Padding(
-                        padding: const EdgeInsets.only(top: 8),
+                        padding: EdgeInsets.only(top: 8.h),
                         child: Text(
                           authAction.error.toString(),
                           style: TextStyle(
@@ -157,14 +189,17 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               error: (error, stackTrace) => Text(error.toString()),
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 16.h),
+          _sectionTitle(context, l10n.tr('theme')),
+          SizedBox(height: 8.h),
           NoorCard(
+            margin: EdgeInsets.zero,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(l10n.tr('theme'),
                     style: Theme.of(context).textTheme.titleMedium),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 SegmentedButton<ThemeMode>(
                   segments: [
                     ButtonSegment(
@@ -190,8 +225,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 16.h),
+          _sectionTitle(context, l10n.tr('accessibilityPresets')),
+          SizedBox(height: 8.h),
           NoorCard(
+            margin: EdgeInsets.zero,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -199,14 +237,14 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   children: [
                     Text(l10n.tr('lineHeight'),
                         style: Theme.of(context).textTheme.titleMedium),
-                    const SizedBox(width: 6),
+                    SizedBox(width: 6.w),
                     Tooltip(
                       message: l10n.tr('tooltipLineHeight'),
-                      child: const Icon(Icons.info_outline_rounded, size: 18),
+                      child: Icon(Icons.info_outline_rounded, size: 18.sp),
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 Row(
                   children: [
                     Text(l10n.tr('lineHeightCompact')),
@@ -227,20 +265,54 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     Text(l10n.tr('lineHeightRelaxed')),
                   ],
                 ),
+                SizedBox(height: 8.h),
+                Row(
+                  children: [
+                    Text(l10n.tr('textSize'),
+                        style: Theme.of(context).textTheme.titleMedium),
+                    SizedBox(width: 6.w),
+                    Tooltip(
+                      message: l10n.tr('tooltipTextSize'),
+                      child: Icon(Icons.info_outline_rounded, size: 18.sp),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8.h),
+                Row(
+                  children: [
+                    Text(l10n.tr('textSizeSmall')),
+                    Expanded(
+                      child: Slider(
+                        min: 0.9,
+                        max: 1.3,
+                        divisions: 4,
+                        value: textScale,
+                        label: textScale.toStringAsFixed(2),
+                        onChanged: (value) {
+                          ref
+                              .read(textScaleControllerProvider.notifier)
+                              .setScale(value);
+                        },
+                      ),
+                    ),
+                    Text(l10n.tr('textSizeLarge')),
+                  ],
+                ),
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12.h),
           NoorCard(
+            margin: EdgeInsets.zero,
             child: SwitchListTile.adaptive(
               contentPadding: EdgeInsets.zero,
               title: Row(
                 children: [
                   Text(l10n.tr('highContrast')),
-                  const SizedBox(width: 6),
+                  SizedBox(width: 6.w),
                   Tooltip(
                     message: l10n.tr('tooltipHighContrast'),
-                    child: const Icon(Icons.info_outline_rounded, size: 18),
+                    child: Icon(Icons.info_outline_rounded, size: 18.sp),
                   ),
                 ],
               ),
@@ -257,8 +329,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               },
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12.h),
           NoorCard(
+            margin: EdgeInsets.zero,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -266,10 +339,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   l10n.tr('accessibilityPresets'),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10.h),
                 Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+                  spacing: 8.w,
+                  runSpacing: 8.h,
                   children: [
                     NoorButton(
                       style: NoorButtonStyle.primary,
@@ -319,7 +392,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10.h),
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton.icon(
@@ -333,14 +406,17 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 16.h),
+          _sectionTitle(context, l10n.tr('preview')),
+          SizedBox(height: 8.h),
           NoorCard(
+            margin: EdgeInsets.zero,
             child: ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.menu_book_rounded),
+              leading: Icon(Icons.menu_book_rounded, size: 22.sp),
               title: Text(l10n.tr('accessibilityGuide')),
               subtitle: Text(l10n.tr('accessibilityGuideSubtitle')),
-              trailing: const Icon(Icons.chevron_right_rounded),
+              trailing: Icon(Icons.chevron_right_rounded, size: 20.sp),
               onTap: () {
                 _showAccessibilityGuide(
                   context: context,
@@ -350,8 +426,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               },
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12.h),
           NoorCard(
+            margin: EdgeInsets.zero,
             highlight: highContrast,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -363,21 +440,21 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   l10n.tr('previewBody'),
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 Row(
                   children: [
                     Chip(
                       label: Text(
                           '${l10n.tr('textSize')}: ${textScale.toStringAsFixed(2)}'),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8.w),
                     Chip(
                       label: Text(
                           '${l10n.tr('lineHeight')}: ${lineHeight.toStringAsFixed(1)}'),
                     ),
                   ],
                 ),
-                const SizedBox(height: 6),
+                SizedBox(height: 6.h),
                 Text(
                   highContrast
                       ? l10n.tr('highContrastEnabled')
@@ -392,54 +469,17 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 16.h),
+          _sectionTitle(context, l10n.tr('language')),
+          SizedBox(height: 8.h),
           NoorCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(l10n.tr('textSize'),
-                        style: Theme.of(context).textTheme.titleMedium),
-                    const SizedBox(width: 6),
-                    Tooltip(
-                      message: l10n.tr('tooltipTextSize'),
-                      child: const Icon(Icons.info_outline_rounded, size: 18),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Text(l10n.tr('textSizeSmall')),
-                    Expanded(
-                      child: Slider(
-                        min: 0.9,
-                        max: 1.3,
-                        divisions: 4,
-                        value: textScale,
-                        label: textScale.toStringAsFixed(2),
-                        onChanged: (value) {
-                          ref
-                              .read(textScaleControllerProvider.notifier)
-                              .setScale(value);
-                        },
-                      ),
-                    ),
-                    Text(l10n.tr('textSizeLarge')),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          NoorCard(
+            margin: EdgeInsets.zero,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(l10n.tr('language'),
                     style: Theme.of(context).textTheme.titleMedium),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 DropdownButtonFormField<String>(
                   initialValue: locale.languageCode,
                   decoration:
@@ -463,6 +503,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _sectionTitle(BuildContext context, String title) {
+    return Text(
+      title,
+      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
     );
   }
 
@@ -712,5 +761,51 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           .read(accessibilityGuideDisabledControllerProvider.notifier)
           .setDisabled(true);
     }
+  }
+}
+
+class _SettingStatCard extends StatelessWidget {
+  const _SettingStatCard({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
+
+  final String label;
+  final String value;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+      decoration: BoxDecoration(
+        color: AppColors.darkBgElevated,
+        borderRadius: BorderRadius.circular(14.r),
+        border: Border.all(color: AppColors.borderActive, width: 1),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 16.sp, color: AppColors.goldPrimary),
+          SizedBox(height: 4.h),
+          Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+          SizedBox(height: 2.h),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelSmall,
+          ),
+        ],
+      ),
+    );
   }
 }

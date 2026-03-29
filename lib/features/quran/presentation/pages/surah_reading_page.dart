@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../shared/providers/firebase_providers.dart';
@@ -130,7 +131,7 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
           return Column(
             children: [
               NoorCard(
-                margin: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                margin: EdgeInsets.fromLTRB(12.w, 8.h, 12.w, 8.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -138,42 +139,46 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
                       l10n.tr('quickTools'),
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10.h),
                     Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
+                      spacing: 8.w,
+                      runSpacing: 8.h,
                       children: [
                         Chip(
-                          avatar: const Icon(Icons.menu_book_rounded, size: 16),
+                          avatar: Icon(Icons.menu_book_rounded, size: 16.sp),
                           label:
                               Text('${l10n.tr('ayah')}: ${sortedAyahs.length}'),
                         ),
                         Chip(
-                          avatar:
-                              const Icon(Icons.auto_stories_rounded, size: 16),
+                          avatar: Icon(
+                            Icons.auto_stories_rounded,
+                            size: 16.sp,
+                          ),
                           label: Text(
                               '${l10n.tr('page')}: ${orderedPages.length}'),
                         ),
                         Chip(
-                          avatar: const Icon(Icons.percent_rounded, size: 16),
+                          avatar: Icon(Icons.percent_rounded, size: 16.sp),
                           label: Text(
                             '${l10n.tr('readingProgress')}: ${(_scrollProgress * 100).round()}%',
                           ),
                         ),
                         ActionChip(
-                          avatar:
-                              const Icon(Icons.low_priority_rounded, size: 16),
+                          avatar: Icon(
+                            Icons.low_priority_rounded,
+                            size: 16.sp,
+                          ),
                           label: Text(l10n.tr('jumpToPage')),
                           onPressed: () =>
                               _openPageJumpSheet(context, sortedAyahs),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10.h),
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(10.r),
                       child: LinearProgressIndicator(
-                        minHeight: 8,
+                        minHeight: 8.h,
                         value: _scrollProgress,
                       ),
                     ),
@@ -188,22 +193,21 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
                   },
                   child: ListView.builder(
                     controller: _scrollController,
-                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    padding: EdgeInsets.symmetric(vertical: 8.h),
                     itemCount: orderedPages.length,
                     itemBuilder: (context, index) {
                       final pageNumber = orderedPages[index];
                       final ayahsInPage = pageGroups[pageNumber]!;
 
                       return NoorCard(
-                        margin: const EdgeInsets.fromLTRB(12, 6, 12, 6),
+                        margin: EdgeInsets.fromLTRB(12.w, 6.h, 12.w, 6.h),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
-                                const Icon(Icons.auto_stories_rounded,
-                                    size: 18),
-                                const SizedBox(width: 6),
+                                Icon(Icons.auto_stories_rounded, size: 18.sp),
+                                SizedBox(width: 6.w),
                                 Text(
                                   '${l10n.tr('page')} $pageNumber',
                                   style:
@@ -211,10 +215,10 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 10),
+                            SizedBox(height: 10.h),
                             ...ayahsInPage.map(
                               (ayah) => Padding(
-                                padding: const EdgeInsets.only(bottom: 14),
+                                padding: EdgeInsets.only(bottom: 14.h),
                                 child: AyahWidget(
                                   ayah: ayah,
                                   highlight:
@@ -274,7 +278,7 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
         },
         error: (error, stackTrace) => Center(
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(20.r),
             child: Text(error.toString(), textAlign: TextAlign.center),
           ),
         ),
@@ -298,7 +302,7 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
         return StatefulBuilder(
           builder: (context, setState) {
             return Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
+              padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 20.h),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -307,7 +311,7 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
                     l10n.tr('jumpToPage'),
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   Text(
                     '${l10n.tr('page')} ${pages[selectedPageIndex.round()]} (${selectedPageIndex.round() + 1}/${pages.length})',
                     style: Theme.of(context).textTheme.bodyMedium,
@@ -324,7 +328,7 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
                       });
                     },
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton.icon(

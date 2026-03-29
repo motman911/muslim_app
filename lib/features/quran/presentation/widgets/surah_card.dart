@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/noor_card.dart';
@@ -33,7 +34,7 @@ class SurahCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         onLongPress: onLongPress,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         child: Row(
           children: [
             CircleAvatar(
@@ -43,16 +44,16 @@ class SurahCard extends StatelessWidget {
                 style: const TextStyle(color: AppColors.goldPrimary),
               ),
             ),
-            const SizedBox(width: 10),
+            SizedBox(width: 10.w),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     surah.arabicName,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Amiri',
-                      fontSize: 22,
+                      fontSize: 22.sp,
                       color: AppColors.goldPrimary,
                     ),
                   ),
@@ -62,14 +63,14 @@ class SurahCard extends StatelessWidget {
             ),
             Icon(
               isMakki ? Icons.nights_stay_rounded : Icons.location_city_rounded,
-              size: 18,
+              size: 18.sp,
             ),
             if (isCurrent && isLoading)
-              const Padding(
-                padding: EdgeInsets.only(left: 8),
+              Padding(
+                padding: EdgeInsets.only(left: 8.w),
                 child: SizedBox(
-                  width: 22,
-                  height: 22,
+                  width: 22.w,
+                  height: 22.w,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 ),
               )
