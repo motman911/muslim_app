@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../services/audio_service.dart';
+import '../../../../services/download_service.dart';
 import '../../../../services/reading_progress_sync_service.dart';
 import '../../data/datasources/quran_local_data_source.dart';
 import '../../data/datasources/quran_remote_data_source.dart';
@@ -67,9 +68,15 @@ final filteredSurahsProvider = Provider<AsyncValue<List<SurahEntity>>>((ref) {
 });
 
 final quranAudioServiceProvider = Provider<QuranAudioService>((ref) {
-  final service = QuranAudioService();
+  final service = QuranAudioService(
+    downloadService: ref.watch(quranDownloadServiceProvider),
+  );
   ref.onDispose(service.dispose);
   return service;
+});
+
+final quranDownloadServiceProvider = Provider<DownloadService>((ref) {
+  return DownloadService();
 });
 
 class QuranAudioState {

@@ -17,6 +17,8 @@ class QuranRecitationsPage extends ConsumerStatefulWidget {
 class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
   late String _selectedReciterId;
   String _searchText = '';
+  final Set<String> _downloadingKeys = <String>{};
+  final Map<String, double> _downloadProgress = <String, double>{};
 
   @override
   void initState() {
@@ -29,6 +31,7 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
     final l10n = context.l10n;
     final surahsAsync = ref.watch(surahsProvider);
     final audioState = ref.watch(quranAudioControllerProvider);
+    final downloadService = ref.watch(quranDownloadServiceProvider);
     final activeReciter = QuranAudioService.reciters.firstWhere(
       (reciter) => reciter.id == audioState.currentReciterId,
       orElse: () => QuranAudioService.reciters.first,
@@ -104,6 +107,10 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
                     final surah = filteredSurahs[index];
                     final isCurrent = audioState.currentSurahId == surah.id;
                     final isPlayingCurrent = isCurrent && audioState.isPlaying;
+                    final downloadKey = '${_selectedReciterId}_${surah.id}';
+                    final isDownloading =
+                        _downloadingKeys.contains(downloadKey);
+                    final progress = _downloadProgress[downloadKey] ?? 0;
 
                     return ListTile(
                       leading: CircleAvatar(
@@ -117,22 +124,117 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
                       subtitle:
                           Text('${surah.englishName} • ${surah.ayahCount}'),
                       selected: isCurrent,
-                      trailing: IconButton(
-                        icon: Icon(
-                          isPlayingCurrent
-                              ? Icons.pause_rounded
-                              : Icons.play_arrow_rounded,
-                        ),
-                        onPressed: audioState.isLoading
-                            ? null
-                            : () {
-                                ref
-                                    .read(quranAudioControllerProvider.notifier)
-                                    .toggleSurah(
-                                      surah,
-                                      reciterId: _selectedReciterId,
-                                    );
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (isDownloading)
+                            SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                value: progress > 0 ? progress : null,
+                              ),
+                            )
+                          else
+                            FutureBuilder<bool>(
+                              future: downloadService.isSurahDownloaded(
+                                reciterId: _selectedReciterId,
+                                surahId: surah.id,
+                              ),
+                              builder: (context, snapshot) {
+                                final downloaded = snapshot.data ?? false;
+                                return IconButton(
+                                  icon: Icon(
+                                    downloaded
+                                        ? Icons.download_done_rounded
+                                        : Icons.download_rounded,
+                                  ),
+                                  tooltip: downloaded
+                                      ? l10n.tr('downloadedOffline')
+                                      : l10n.tr('downloadForOffline'),
+                                  onPressed: downloaded
+                                      ? null
+                                      : () async {
+                                          setState(() {
+                                            _downloadingKeys.add(downloadKey);
+                                            _downloadProgress[downloadKey] = 0;
+                                          });
+
+                                          try {
+                                            await downloadService
+                                                .downloadSurahAudio(
+                                              surahId: surah.id,
+                                              reciterId: _selectedReciterId,
+                                              sourceUrl: QuranAudioService
+                                                  .resolveSurahUrl(
+                                                surahId: surah.id,
+                                                reciterId: _selectedReciterId,
+                                              ),
+                                              onProgress: (value) {
+                                                if (!mounted) {
+                                                  return;
+                                                }
+                                                setState(() {
+                                                  _downloadProgress[
+                                                      downloadKey] = value;
+                                                });
+                                              },
+                                            );
+
+                                            if (context.mounted) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    l10n.tr(
+                                                        'downloadCompleted'),
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          } catch (_) {
+                                            if (context.mounted) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    l10n.tr('downloadFailed'),
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          } finally {
+                                            if (mounted) {
+                                              setState(() {
+                                                _downloadingKeys
+                                                    .remove(downloadKey);
+                                              });
+                                            }
+                                          }
+                                        },
+                                );
                               },
+                            ),
+                          IconButton(
+                            icon: Icon(
+                              isPlayingCurrent
+                                  ? Icons.pause_rounded
+                                  : Icons.play_arrow_rounded,
+                            ),
+                            onPressed: audioState.isLoading
+                                ? null
+                                : () {
+                                    ref
+                                        .read(quranAudioControllerProvider
+                                            .notifier)
+                                        .toggleSurah(
+                                          surah,
+                                          reciterId: _selectedReciterId,
+                                        );
+                                  },
+                          ),
+                        ],
                       ),
                     );
                   },

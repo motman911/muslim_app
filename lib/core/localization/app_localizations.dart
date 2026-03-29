@@ -135,6 +135,10 @@ class AppLocalizations {
       'quickTools': 'أدوات سريعة',
       'goToSelectedAyah': 'الانتقال للآية المحددة',
       'markAsLastRead': 'تم تحديث آخر قراءة',
+      'downloadForOffline': 'تنزيل للاستخدام بدون إنترنت',
+      'downloadedOffline': 'متاح بدون إنترنت',
+      'downloadCompleted': 'اكتمل تنزيل السورة',
+      'downloadFailed': 'فشل التنزيل، حاول مرة أخرى',
     },
     'en': {
       'appName': 'Noor',
@@ -253,6 +257,10 @@ class AppLocalizations {
       'quickTools': 'Quick tools',
       'goToSelectedAyah': 'Go to selected ayah',
       'markAsLastRead': 'Last read updated',
+      'downloadForOffline': 'Download for offline',
+      'downloadedOffline': 'Available offline',
+      'downloadCompleted': 'Surah download completed',
+      'downloadFailed': 'Download failed, please try again',
     },
     'fr': {
       'appName': 'Noor',
@@ -375,6 +383,10 @@ class AppLocalizations {
       'quickTools': 'Outils rapides',
       'goToSelectedAyah': 'Aller au verset selectionne',
       'markAsLastRead': 'Derniere lecture mise a jour',
+      'downloadForOffline': 'Telecharger pour hors ligne',
+      'downloadedOffline': 'Disponible hors ligne',
+      'downloadCompleted': 'Telechargement de la sourate termine',
+      'downloadFailed': 'Echec du telechargement, reessayez',
     },
   };
 
