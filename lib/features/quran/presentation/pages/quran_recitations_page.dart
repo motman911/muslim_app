@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../services/audio_service.dart';
@@ -24,6 +25,8 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
   final Map<String, double> _downloadProgress = <String, double>{};
 
   bool _isBatchDownloading = false;
+  bool _isBatchPaused = false;
+  bool _stopBatchRequested = false;
   int _batchTotal = 0;
   int _batchCompleted = 0;
   int _offlineCountRefreshTick = 0;
@@ -46,7 +49,18 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.tr('audio'))),
+      appBar: AppBar(
+        title: Text(l10n.tr('audio')),
+        actions: [
+          IconButton(
+            tooltip: l10n.tr('downloadsManagerTitle'),
+            onPressed: () {
+              context.push('/downloads?reciterId=$_selectedReciterId');
+            },
+            icon: const Icon(Icons.folder_zip_rounded),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           NoorCard(
@@ -112,6 +126,19 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
                                   Icons.download_for_offline_rounded),
                               label: Text(l10n.tr('downloadFilteredSurahs')),
                             ),
+                            FilledButton.icon(
+                              onPressed: _isBatchDownloading
+                                  ? null
+                                  : () {
+                                      _downloadFullMushaf(
+                                        context,
+                                        surahs,
+                                        downloadService,
+                                      );
+                                    },
+                              icon: const Icon(Icons.library_books_rounded),
+                              label: Text(l10n.tr('downloadFullMushaf')),
+                            ),
                             OutlinedButton.icon(
                               onPressed: _isBatchDownloading
                                   ? null
@@ -165,6 +192,27 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       '${l10n.tr('batchDownloadProgress')}: $_batchCompleted/$_batchTotal',
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          _isBatchPaused = !_isBatchPaused;
+                        });
+                      },
+                      icon: Icon(
+                        _isBatchPaused
+                            ? Icons.play_arrow_rounded
+                            : Icons.pause_rounded,
+                      ),
+                      label: Text(
+                        _isBatchPaused
+                            ? l10n.tr('resumeBatchDownload')
+                            : l10n.tr('pauseBatchDownload'),
+                      ),
                     ),
                   ),
                 ],
@@ -385,6 +433,8 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
 
     setState(() {
       _isBatchDownloading = true;
+      _isBatchPaused = false;
+      _stopBatchRequested = false;
       _batchTotal = surahs.length;
       _batchCompleted = 0;
     });
@@ -392,6 +442,14 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
     var failed = 0;
 
     for (final surah in surahs) {
+      while (_isBatchPaused && mounted) {
+        await Future<void>.delayed(const Duration(milliseconds: 220));
+      }
+
+      if (_stopBatchRequested || !mounted) {
+        break;
+      }
+
       final key = '${_selectedReciterId}_${surah.id}';
       setState(() {
         _downloadingKeys.add(key);
@@ -438,6 +496,7 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
     final successCount = surahs.length - failed;
     setState(() {
       _isBatchDownloading = false;
+      _isBatchPaused = false;
       _offlineCountRefreshTick += 1;
     });
 
@@ -448,6 +507,15 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _downloadFullMushaf(
+    BuildContext context,
+    List<SurahEntity> surahs,
+    DownloadService downloadService,
+  ) async {
+    final allSurahs = [...surahs]..sort((a, b) => a.id.compareTo(b.id));
+    await _downloadBatch(context, allSurahs, downloadService);
   }
 
   Future<void> _clearReciterDownloads(

@@ -7,6 +7,7 @@ import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../features/prayer_times/presentation/pages/prayer_times_page.dart';
 import '../../features/qibla/presentation/pages/qibla_page.dart';
 import '../../features/quran/presentation/pages/bookmarks_page.dart';
+import '../../features/quran/presentation/pages/downloads_management_page.dart';
 import '../../features/quran/presentation/pages/quran_home_page.dart';
 import '../../features/quran/presentation/pages/quran_recitations_page.dart';
 import '../../features/quran/presentation/pages/surah_reading_page.dart';
@@ -62,6 +63,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: '/audio',
             pageBuilder: (context, state) =>
                 _buildTransitionPage(const QuranRecitationsPage()),
+          ),
+          GoRoute(
+            path: '/downloads',
+            pageBuilder: (context, state) {
+              final reciterId = state.uri.queryParameters['reciterId'];
+              return _buildTransitionPage(
+                DownloadsManagementPage(initialReciterId: reciterId),
+              );
+            },
           ),
           GoRoute(
             path: '/bookmarks',
