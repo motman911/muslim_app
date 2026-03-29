@@ -50,18 +50,23 @@ class QuickAccessGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      shrinkWrap: true,
-      itemCount: _items.length,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 10.h,
-        crossAxisSpacing: 10.w,
-        childAspectRatio: 1.6,
-      ),
-      itemBuilder: (context, index) {
-        return _QuickTile(item: _items[index]);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final wide = constraints.maxWidth >= 560.w;
+        return GridView.builder(
+          shrinkWrap: true,
+          itemCount: _items.length,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: wide ? 3 : 2,
+            mainAxisSpacing: 10.h,
+            crossAxisSpacing: 10.w,
+            childAspectRatio: wide ? 1.95 : 1.62,
+          ),
+          itemBuilder: (context, index) {
+            return _QuickTile(item: _items[index]);
+          },
+        );
       },
     );
   }
@@ -114,10 +119,43 @@ class _QuickTileState extends State<_QuickTile> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(widget.item.icon, size: 28.sp, color: AppColors.goldPrimary),
-              const Spacer(),
-              Text(widget.item.label, style: AppTextStyles.bodyMedium),
-              Text(widget.item.sub, style: AppTextStyles.tiny),
+              Row(
+                children: [
+                  Container(
+                    width: 34.w,
+                    height: 34.w,
+                    decoration: BoxDecoration(
+                      color: AppColors.goldSubtle,
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    child: Icon(
+                      widget.item.icon,
+                      size: 20.sp,
+                      color: AppColors.goldPrimary,
+                    ),
+                  ),
+                  const Spacer(),
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 12.sp,
+                    color: AppColors.textMuted,
+                  ),
+                ],
+              ),
+              SizedBox(height: 10.h),
+              Text(
+                widget.item.label,
+                style: AppTextStyles.bodyMedium,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              SizedBox(height: 2.h),
+              Text(
+                widget.item.sub,
+                style: AppTextStyles.tiny,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ],
           ),
         ),

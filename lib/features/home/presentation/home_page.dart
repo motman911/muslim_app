@@ -22,11 +22,31 @@ class HomePage extends StatelessWidget {
           SliverToBoxAdapter(child: _HomeHeader()),
           SliverToBoxAdapter(
             child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: _HomeSectionTitle(
+                title: 'مواقيت اليوم',
+                subtitle: 'تابع الصلاة القادمة ووقت الانتظار',
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(child: SizedBox(height: 10.h)),
+          SliverToBoxAdapter(
+            child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16).w,
               child: const RepaintBoundary(child: PrayerHeroCard()),
             ),
           ),
           SliverToBoxAdapter(child: SizedBox(height: 16.h)),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: _HomeSectionTitle(
+                title: 'إلهام اليوم',
+                subtitle: 'آية مختارة مع وصول سريع للحفظ والمشاركة',
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(child: SizedBox(height: 10.h)),
           SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16).w,
@@ -36,11 +56,31 @@ class HomePage extends StatelessWidget {
           SliverToBoxAdapter(child: SizedBox(height: 16.h)),
           SliverToBoxAdapter(
             child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: _HomeSectionTitle(
+                title: 'اختصاراتك',
+                subtitle: 'تنقل سريع لأهم أقسام التطبيق',
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(child: SizedBox(height: 10.h)),
+          SliverToBoxAdapter(
+            child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16).w,
               child: const RepaintBoundary(child: QuickAccessGrid()),
             ),
           ),
           SliverToBoxAdapter(child: SizedBox(height: 16.h)),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: _HomeSectionTitle(
+                title: 'استمرارية القراءة',
+                subtitle: 'ارجع مباشرة لآخر موضع وصلت له',
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(child: SizedBox(height: 10.h)),
           SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16).w,
@@ -92,6 +132,28 @@ class _HomeHeader extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _HomeSectionTitle extends StatelessWidget {
+  const _HomeSectionTitle({
+    required this.title,
+    required this.subtitle,
+  });
+
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: AppTextStyles.h3),
+        SizedBox(height: 2.h),
+        Text(subtitle, style: AppTextStyles.tiny),
+      ],
     );
   }
 }

@@ -28,6 +28,14 @@ class ContinueReadingCard extends StatelessWidget {
                   style: AppTextStyles.caption,
                 ),
                 SizedBox(height: 8.h),
+                Row(
+                  children: [
+                    Text('54%', style: AppTextStyles.tiny),
+                    SizedBox(width: 6.w),
+                    Text('مكتمل', style: AppTextStyles.tiny),
+                  ],
+                ),
+                SizedBox(height: 6.h),
                 Container(
                   height: 5.h,
                   decoration: BoxDecoration(
@@ -49,10 +57,13 @@ class ContinueReadingCard extends StatelessWidget {
             ),
           ),
           SizedBox(width: 12.w),
-          NoorButton(
-            label: 'متابعة',
-            icon: Icons.arrow_forward_rounded,
-            onPressed: () => context.push('/quran/surah/18'),
+          SizedBox(
+            width: 102.w,
+            child: NoorButton(
+              label: 'متابعة',
+              icon: Icons.arrow_forward_rounded,
+              onPressed: () => context.push('/quran/surah/18'),
+            ),
           ),
         ],
       ),
