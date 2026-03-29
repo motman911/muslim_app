@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/constants/color_scheme.dart';
 import '../../core/localization/app_localizations.dart';
+import '../../shared/widgets/bottom_nav_bar.dart';
 
 class MainShellScaffold extends StatelessWidget {
   const MainShellScaffold({super.key, required this.child});
@@ -10,6 +11,7 @@ class MainShellScaffold extends StatelessWidget {
   final Widget child;
 
   static const _tabs = <_NavTab>[
+    _NavTab(path: '/home', icon: Icons.home_rounded, labelKey: 'home'),
     _NavTab(path: '/quran', icon: Icons.menu_book_rounded, labelKey: 'quran'),
     _NavTab(path: '/audio', icon: Icons.graphic_eq_rounded, labelKey: 'audio'),
     _NavTab(
@@ -49,46 +51,21 @@ class MainShellScaffold extends StatelessWidget {
         child: SafeArea(child: child),
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
-        child: Container(
-          decoration: BoxDecoration(
-            color: isDark
-                ? AppColors.darkBackgroundSecondary.withValues(alpha: 0.92)
-                : Colors.white.withValues(alpha: 0.94),
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(
-              color: isDark
-                  ? AppColors.border
-                  : AppColors.lightTextMuted.withValues(alpha: 0.18),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: isDark ? 0.32 : 0.10),
-                blurRadius: 22,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: NavigationBar(
-            selectedIndex: currentIndex < 0 ? 0 : currentIndex,
-            onDestinationSelected: (index) {
-              context.go(_tabs[index].path);
-            },
-            destinations: _tabs
-                .map(
-                  (tab) => NavigationDestination(
-                    icon: Icon(tab.icon),
-                    selectedIcon: Icon(
-                      tab.icon,
-                      color: isDark
-                          ? AppColors.goldPrimary
-                          : AppColors.lightGoldPrimary,
-                    ),
-                    label: l10n.tr(tab.labelKey),
-                  ),
-                )
-                .toList(),
-          ),
+        padding: EdgeInsets.zero,
+        child: BottomNavBar(
+          items: _tabs
+              .map(
+                (tab) => BottomNavItem(
+                  path: tab.path,
+                  icon: tab.icon,
+                  label: l10n.tr(tab.labelKey),
+                ),
+              )
+              .toList(),
+          currentIndex: currentIndex < 0 ? 0 : currentIndex,
+          onTap: (index) {
+            context.go(_tabs[index].path);
+          },
         ),
       ),
     );

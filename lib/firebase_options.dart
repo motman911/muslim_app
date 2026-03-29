@@ -71,5 +71,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'noor-islamic-app-911.firebasestorage.app',
     iosBundleId: 'com.example.muslimAppNew',
   );
-
 }

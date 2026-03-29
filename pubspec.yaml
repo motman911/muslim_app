@@ -34,6 +34,7 @@ dependencies:
 
   # القرآن والأذكار
   http: ^1.5.0
+  dio: ^5.4.3+1
   intl: ^0.20.2
   just_audio: ^0.10.5
   google_fonts: ^6.2.1
@@ -66,8 +67,11 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/images/
+    - assets/lottie/
     - assets/quran/
     - assets/azkar/
+    - assets/translations/
 
   fonts:
     - family: Lateef

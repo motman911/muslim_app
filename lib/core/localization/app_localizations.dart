@@ -30,6 +30,7 @@ class AppLocalizations {
       'onboardingBody':
           'قرآن، أذكار، مواقيت صلاة، قبلة، ووضع Offline من أول تشغيل.',
       'quran': 'القرآن',
+      'home': 'الرئيسية',
       'searchSurah': 'ابحث عن سورة',
       'noResults': 'لا توجد نتائج',
       'prayerTimes': 'مواقيت الصلاة',
@@ -169,6 +170,7 @@ class AppLocalizations {
       'onboardingBody':
           'Quran, Azkar, Prayer Times, Qibla, and offline support from day one.',
       'quran': 'Quran',
+      'home': 'Home',
       'searchSurah': 'Search surah',
       'noResults': 'No results found',
       'prayerTimes': 'Prayer Times',
@@ -312,6 +314,7 @@ class AppLocalizations {
       'onboardingBody':
           'Coran, Azkar, horaires de priere, Qibla et mode hors ligne des le premier lancement.',
       'quran': 'Coran',
+      'home': 'Accueil',
       'searchSurah': 'Rechercher une sourate',
       'noResults': 'Aucun resultat',
       'prayerTimes': 'Horaires de priere',
