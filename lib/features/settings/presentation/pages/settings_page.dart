@@ -58,6 +58,58 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       body: ListView(
         padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 24.h),
         children: [
+          NoorCard(
+            margin: EdgeInsets.zero,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 40.w,
+                  height: 40.w,
+                  decoration: BoxDecoration(
+                    color: AppColors.goldSubtle,
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  child: Icon(
+                    Icons.tune_rounded,
+                    color: AppColors.goldPrimary,
+                    size: 22.sp,
+                  ),
+                ),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.tr('settings'),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                      ),
+                      SizedBox(height: 4.h),
+                      Text(
+                        l10n.tr('accessibilityGuideSubtitle'),
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    _showAccessibilityGuide(
+                      context: context,
+                      ref: ref,
+                      isAutoOpen: false,
+                    );
+                  },
+                  icon: Icon(Icons.help_outline_rounded, size: 20.sp),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 12.h),
           LayoutBuilder(
             builder: (context, constraints) {
               final spacing = 8.w;
@@ -105,7 +157,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             },
           ),
           SizedBox(height: 16.h),
-          _sectionTitle(context, l10n.tr('account')),
+          _sectionTitle(
+            context,
+            title: l10n.tr('account'),
+            icon: Icons.person_rounded,
+          ),
           SizedBox(height: 8.h),
           NoorCard(
             margin: EdgeInsets.zero,
@@ -207,7 +263,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ),
           ),
           SizedBox(height: 16.h),
-          _sectionTitle(context, l10n.tr('theme')),
+          _sectionTitle(
+            context,
+            title: l10n.tr('theme'),
+            icon: Icons.palette_rounded,
+          ),
           SizedBox(height: 8.h),
           NoorCard(
             margin: EdgeInsets.zero,
@@ -243,7 +303,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ),
           ),
           SizedBox(height: 16.h),
-          _sectionTitle(context, l10n.tr('accessibilityPresets')),
+          _sectionTitle(
+            context,
+            title: l10n.tr('readingSettings'),
+            icon: Icons.menu_book_rounded,
+          ),
           SizedBox(height: 8.h),
           NoorCard(
             margin: EdgeInsets.zero,
@@ -347,6 +411,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ),
           ),
           SizedBox(height: 12.h),
+          _sectionTitle(
+            context,
+            title: l10n.tr('accessibilityPresets'),
+            icon: Icons.auto_awesome_rounded,
+          ),
+          SizedBox(height: 8.h),
           NoorCard(
             margin: EdgeInsets.zero,
             child: Column(
@@ -424,7 +494,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ),
           ),
           SizedBox(height: 16.h),
-          _sectionTitle(context, l10n.tr('preview')),
+          _sectionTitle(
+            context,
+            title: l10n.tr('preview'),
+            icon: Icons.visibility_rounded,
+          ),
           SizedBox(height: 8.h),
           NoorCard(
             margin: EdgeInsets.zero,
@@ -487,7 +561,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ),
           ),
           SizedBox(height: 16.h),
-          _sectionTitle(context, l10n.tr('language')),
+          _sectionTitle(
+            context,
+            title: l10n.tr('language'),
+            icon: Icons.language_rounded,
+          ),
           SizedBox(height: 8.h),
           NoorCard(
             margin: EdgeInsets.zero,
@@ -523,12 +601,22 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     );
   }
 
-  Widget _sectionTitle(BuildContext context, String title) {
-    return Text(
-      title,
-      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+  Widget _sectionTitle(
+    BuildContext context, {
+    required String title,
+    required IconData icon,
+  }) {
+    return Row(
+      children: [
+        Icon(icon, size: 16.sp, color: AppColors.goldPrimary),
+        SizedBox(width: 6.w),
+        Text(
+          title,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+        ),
+      ],
     );
   }
 
@@ -797,7 +885,11 @@ class _SettingStatCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
       decoration: BoxDecoration(
-        color: AppColors.darkBgElevated,
+        gradient: const LinearGradient(
+          colors: [AppColors.darkBgSecondary, AppColors.darkBgElevated],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(14.r),
         border: Border.all(color: AppColors.borderActive, width: 1),
       ),
@@ -820,6 +912,15 @@ class _SettingStatCard extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.labelSmall,
+          ),
+          SizedBox(height: 4.h),
+          Container(
+            width: 18.w,
+            height: 3.h,
+            decoration: BoxDecoration(
+              color: AppColors.goldPrimary.withValues(alpha: 0.8),
+              borderRadius: BorderRadius.circular(99.r),
+            ),
           ),
         ],
       ),
