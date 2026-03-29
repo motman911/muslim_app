@@ -228,6 +228,16 @@ final quranAudioPlayerStateProvider = StreamProvider<PlayerState>((ref) {
   return player.playerStateStream;
 });
 
+final quranAudioShuffleModeProvider = StreamProvider<bool>((ref) {
+  final player = ref.watch(quranAudioServiceProvider).player;
+  return player.shuffleModeEnabledStream;
+});
+
+final quranAudioLoopModeProvider = StreamProvider<LoopMode>((ref) {
+  final player = ref.watch(quranAudioServiceProvider).player;
+  return player.loopModeStream;
+});
+
 final quranAudioProgressProvider = Provider<double>((ref) {
   final position = ref.watch(quranAudioPositionProvider).value ?? Duration.zero;
   final duration = ref.watch(quranAudioDurationProvider).value ?? Duration.zero;

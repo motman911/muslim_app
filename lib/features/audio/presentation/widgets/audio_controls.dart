@@ -4,6 +4,8 @@ class AudioControls extends StatelessWidget {
   const AudioControls({
     super.key,
     required this.isPlaying,
+    this.isShuffleEnabled = false,
+    this.isRepeatEnabled = false,
     this.onPlayPause,
     this.onNext,
     this.onPrevious,
@@ -12,6 +14,8 @@ class AudioControls extends StatelessWidget {
   });
 
   final bool isPlaying;
+  final bool isShuffleEnabled;
+  final bool isRepeatEnabled;
   final VoidCallback? onPlayPause;
   final VoidCallback? onNext;
   final VoidCallback? onPrevious;
@@ -25,7 +29,11 @@ class AudioControls extends StatelessWidget {
       children: [
         IconButton(
           onPressed: onShuffle,
-          icon: const Icon(Icons.shuffle_rounded),
+          icon: Icon(
+            Icons.shuffle_rounded,
+            color:
+                isShuffleEnabled ? Theme.of(context).colorScheme.primary : null,
+          ),
         ),
         IconButton(
           onPressed: onPrevious,
@@ -49,7 +57,11 @@ class AudioControls extends StatelessWidget {
         ),
         IconButton(
           onPressed: onRepeat,
-          icon: const Icon(Icons.repeat_rounded),
+          icon: Icon(
+            Icons.repeat_rounded,
+            color:
+                isRepeatEnabled ? Theme.of(context).colorScheme.primary : null,
+          ),
         ),
       ],
     );

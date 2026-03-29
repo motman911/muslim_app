@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:just_audio/just_audio.dart';
 
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../services/audio_service.dart';
 import '../../../../shared/widgets/noor_card.dart';
 import '../../../quran/domain/entities/surah_entity.dart';
 import '../../../quran/presentation/providers/quran_providers.dart';
@@ -33,6 +35,10 @@ class _FullPlayerPageState extends ConsumerState<FullPlayerPage> {
     final l10n = context.l10n;
     final audioState = ref.watch(quranAudioControllerProvider);
     final playerState = ref.watch(quranAudioPlayerStateProvider).value;
+    final shuffleEnabled =
+        ref.watch(quranAudioShuffleModeProvider).value ?? false;
+    final loopMode =
+        ref.watch(quranAudioLoopModeProvider).value ?? LoopMode.off;
     final progress = ref.watch(quranAudioProgressProvider);
     final position =
         ref.watch(quranAudioPositionProvider).value ?? Duration.zero;
@@ -46,6 +52,11 @@ class _FullPlayerPageState extends ConsumerState<FullPlayerPage> {
 
     final canControl = audioState.currentSurahId != null;
     final isActuallyPlaying = playerState?.playing ?? audioState.isPlaying;
+    final reciter = QuranAudioService.reciters.firstWhere(
+      (r) => r.id == audioState.currentReciterId,
+      orElse: () => QuranAudioService.reciters.first,
+    );
+    final reciterName = reciter.name;
 
     return Scaffold(
       appBar: AppBar(
@@ -89,7 +100,7 @@ class _FullPlayerPageState extends ConsumerState<FullPlayerPage> {
               style: AppTextStyles.h2,
             ),
             Text(
-              audioState.currentReciterId,
+              reciterName,
               textAlign: TextAlign.center,
               style: AppTextStyles.caption,
             ),
@@ -128,6 +139,8 @@ class _FullPlayerPageState extends ConsumerState<FullPlayerPage> {
             const SizedBox(height: 24),
             AudioControls(
               isPlaying: isActuallyPlaying,
+              isShuffleEnabled: shuffleEnabled,
+              isRepeatEnabled: loopMode != LoopMode.off,
               onPlayPause: canControl
                   ? () {
                       ref
@@ -152,6 +165,23 @@ class _FullPlayerPageState extends ConsumerState<FullPlayerPage> {
                         currentSurahId: audioState.currentSurahId!,
                         sortedSurahs: sortedSurahs,
                       )
+                  : null,
+              onShuffle: canControl
+                  ? () async {
+                      final player = ref.read(quranAudioServiceProvider).player;
+                      await player.setShuffleModeEnabled(!shuffleEnabled);
+                    }
+                  : null,
+              onRepeat: canControl
+                  ? () async {
+                      final player = ref.read(quranAudioServiceProvider).player;
+                      final nextMode = switch (loopMode) {
+                        LoopMode.off => LoopMode.one,
+                        LoopMode.one => LoopMode.all,
+                        LoopMode.all => LoopMode.off,
+                      };
+                      await player.setLoopMode(nextMode);
+                    }
                   : null,
             ),
             const SizedBox(height: 20),
