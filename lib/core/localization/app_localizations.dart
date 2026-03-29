@@ -139,6 +139,12 @@ class AppLocalizations {
       'downloadedOffline': 'متاح بدون إنترنت',
       'downloadCompleted': 'اكتمل تنزيل السورة',
       'downloadFailed': 'فشل التنزيل، حاول مرة أخرى',
+      'downloadFilteredSurahs': 'تنزيل السور الظاهرة',
+      'clearReciterDownloads': 'حذف تنزيلات القارئ',
+      'offlineFilesCount': 'عدد الملفات بدون إنترنت',
+      'batchDownloadProgress': 'تقدم التنزيل الجماعي',
+      'batchDownloadCompleted': 'اكتمل التنزيل الجماعي',
+      'deletedOfflineFiles': 'تم حذف الملفات',
     },
     'en': {
       'appName': 'Noor',
@@ -261,6 +267,12 @@ class AppLocalizations {
       'downloadedOffline': 'Available offline',
       'downloadCompleted': 'Surah download completed',
       'downloadFailed': 'Download failed, please try again',
+      'downloadFilteredSurahs': 'Download visible surahs',
+      'clearReciterDownloads': 'Clear reciter downloads',
+      'offlineFilesCount': 'Offline files count',
+      'batchDownloadProgress': 'Batch download progress',
+      'batchDownloadCompleted': 'Batch download completed',
+      'deletedOfflineFiles': 'Deleted files',
     },
     'fr': {
       'appName': 'Noor',
@@ -387,6 +399,12 @@ class AppLocalizations {
       'downloadedOffline': 'Disponible hors ligne',
       'downloadCompleted': 'Telechargement de la sourate termine',
       'downloadFailed': 'Echec du telechargement, reessayez',
+      'downloadFilteredSurahs': 'Telecharger les sourates affichees',
+      'clearReciterDownloads': 'Effacer les telechargements du recitateur',
+      'offlineFilesCount': 'Nombre de fichiers hors ligne',
+      'batchDownloadProgress': 'Progression du telechargement groupe',
+      'batchDownloadCompleted': 'Telechargement groupe termine',
+      'deletedOfflineFiles': 'Fichiers supprimes',
     },
   };
 

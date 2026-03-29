@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../services/audio_service.dart';
+import '../../../../services/download_service.dart';
 import '../../../../shared/widgets/noor_card.dart';
+import '../../domain/entities/surah_entity.dart';
 import '../providers/quran_providers.dart';
 
 class QuranRecitationsPage extends ConsumerStatefulWidget {
@@ -17,8 +19,14 @@ class QuranRecitationsPage extends ConsumerStatefulWidget {
 class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
   late String _selectedReciterId;
   String _searchText = '';
+
   final Set<String> _downloadingKeys = <String>{};
   final Map<String, double> _downloadProgress = <String, double>{};
+
+  bool _isBatchDownloading = false;
+  int _batchTotal = 0;
+  int _batchCompleted = 0;
+  int _offlineCountRefreshTick = 0;
 
   @override
   void initState() {
@@ -80,22 +88,93 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
                     hintText: l10n.tr('searchSurah'),
                   ),
                 ),
+                const SizedBox(height: 10),
+                surahsAsync.when(
+                  data: (surahs) {
+                    final filteredSurahs = _filterSurahs(surahs);
+                    return Column(
+                      children: [
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            FilledButton.icon(
+                              onPressed: _isBatchDownloading
+                                  ? null
+                                  : () {
+                                      _downloadBatch(
+                                        context,
+                                        filteredSurahs,
+                                        downloadService,
+                                      );
+                                    },
+                              icon: const Icon(
+                                  Icons.download_for_offline_rounded),
+                              label: Text(l10n.tr('downloadFilteredSurahs')),
+                            ),
+                            OutlinedButton.icon(
+                              onPressed: _isBatchDownloading
+                                  ? null
+                                  : () {
+                                      _clearReciterDownloads(
+                                        context,
+                                        downloadService,
+                                      );
+                                    },
+                              icon: const Icon(Icons.delete_sweep_rounded),
+                              label: Text(l10n.tr('clearReciterDownloads')),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        FutureBuilder<int>(
+                          key: ValueKey('offline_$_offlineCountRefreshTick'),
+                          future: downloadService
+                              .downloadedCountForReciter(_selectedReciterId),
+                          builder: (context, snapshot) {
+                            final count = snapshot.data ?? 0;
+                            return Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                '${l10n.tr('offlineFilesCount')}: $count',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                  error: (_, __) => const SizedBox.shrink(),
+                  loading: () => const SizedBox.shrink(),
+                ),
               ],
             ),
           ),
+          if (_isBatchDownloading)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Column(
+                children: [
+                  LinearProgressIndicator(
+                    minHeight: 8,
+                    value: _batchTotal == 0 ? 0 : _batchCompleted / _batchTotal,
+                  ),
+                  const SizedBox(height: 6),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '${l10n.tr('batchDownloadProgress')}: $_batchCompleted/$_batchTotal',
+                    ),
+                  ),
+                ],
+              ),
+            ),
           if (audioState.isLoading) const LinearProgressIndicator(minHeight: 2),
           Expanded(
             child: surahsAsync.when(
               data: (surahs) {
-                final filteredSurahs = surahs.where((surah) {
-                  if (_searchText.isEmpty) {
-                    return true;
-                  }
-
-                  return surah.arabicName.toLowerCase().contains(_searchText) ||
-                      surah.englishName.toLowerCase().contains(_searchText);
-                }).toList();
-
+                final filteredSurahs = _filterSurahs(surahs);
                 if (filteredSurahs.isEmpty) {
                   return Center(child: Text(l10n.tr('noResults')));
                 }
@@ -113,9 +192,7 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
                     final progress = _downloadProgress[downloadKey] ?? 0;
 
                     return ListTile(
-                      leading: CircleAvatar(
-                        child: Text('${surah.id}'),
-                      ),
+                      leading: CircleAvatar(child: Text('${surah.id}')),
                       title: Text(
                         surah.arabicName,
                         style:
@@ -155,64 +232,11 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
                                       : l10n.tr('downloadForOffline'),
                                   onPressed: downloaded
                                       ? null
-                                      : () async {
-                                          setState(() {
-                                            _downloadingKeys.add(downloadKey);
-                                            _downloadProgress[downloadKey] = 0;
-                                          });
-
-                                          try {
-                                            await downloadService
-                                                .downloadSurahAudio(
-                                              surahId: surah.id,
-                                              reciterId: _selectedReciterId,
-                                              sourceUrl: QuranAudioService
-                                                  .resolveSurahUrl(
-                                                surahId: surah.id,
-                                                reciterId: _selectedReciterId,
-                                              ),
-                                              onProgress: (value) {
-                                                if (!mounted) {
-                                                  return;
-                                                }
-                                                setState(() {
-                                                  _downloadProgress[
-                                                      downloadKey] = value;
-                                                });
-                                              },
-                                            );
-
-                                            if (context.mounted) {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                    l10n.tr(
-                                                        'downloadCompleted'),
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          } catch (_) {
-                                            if (context.mounted) {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                    l10n.tr('downloadFailed'),
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          } finally {
-                                            if (mounted) {
-                                              setState(() {
-                                                _downloadingKeys
-                                                    .remove(downloadKey);
-                                              });
-                                            }
-                                          }
-                                        },
+                                      : () => _downloadSingleSurah(
+                                            context,
+                                            downloadService,
+                                            surah,
+                                          ),
                                 );
                               },
                             ),
@@ -275,6 +299,176 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
             ),
         ],
       ),
+    );
+  }
+
+  List<SurahEntity> _filterSurahs(List<SurahEntity> surahs) {
+    return surahs.where((surah) {
+      if (_searchText.isEmpty) {
+        return true;
+      }
+      return surah.arabicName.toLowerCase().contains(_searchText) ||
+          surah.englishName.toLowerCase().contains(_searchText);
+    }).toList();
+  }
+
+  Future<void> _downloadSingleSurah(
+    BuildContext context,
+    DownloadService downloadService,
+    SurahEntity surah,
+  ) async {
+    final l10n = context.l10n;
+    final messenger = ScaffoldMessenger.of(context);
+    final key = '${_selectedReciterId}_${surah.id}';
+
+    setState(() {
+      _downloadingKeys.add(key);
+      _downloadProgress[key] = 0;
+    });
+
+    try {
+      await downloadService.downloadSurahAudio(
+        surahId: surah.id,
+        reciterId: _selectedReciterId,
+        sourceUrl: QuranAudioService.resolveSurahUrl(
+          surahId: surah.id,
+          reciterId: _selectedReciterId,
+        ),
+        onProgress: (value) {
+          if (!mounted) {
+            return;
+          }
+          setState(() {
+            _downloadProgress[key] = value;
+          });
+        },
+      );
+
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _offlineCountRefreshTick += 1;
+      });
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.tr('downloadCompleted'))),
+      );
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.tr('downloadFailed'))),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _downloadingKeys.remove(key);
+        });
+      }
+    }
+  }
+
+  Future<void> _downloadBatch(
+    BuildContext context,
+    List<SurahEntity> surahs,
+    DownloadService downloadService,
+  ) async {
+    final l10n = context.l10n;
+    final messenger = ScaffoldMessenger.of(context);
+    if (surahs.isEmpty) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.tr('noResults'))),
+      );
+      return;
+    }
+
+    setState(() {
+      _isBatchDownloading = true;
+      _batchTotal = surahs.length;
+      _batchCompleted = 0;
+    });
+
+    var failed = 0;
+
+    for (final surah in surahs) {
+      final key = '${_selectedReciterId}_${surah.id}';
+      setState(() {
+        _downloadingKeys.add(key);
+        _downloadProgress[key] = 0;
+      });
+
+      try {
+        await downloadService.downloadSurahAudio(
+          surahId: surah.id,
+          reciterId: _selectedReciterId,
+          sourceUrl: QuranAudioService.resolveSurahUrl(
+            surahId: surah.id,
+            reciterId: _selectedReciterId,
+          ),
+          onProgress: (value) {
+            if (!mounted) {
+              return;
+            }
+            setState(() {
+              _downloadProgress[key] = value;
+            });
+          },
+        );
+      } catch (_) {
+        failed += 1;
+      } finally {
+        if (mounted) {
+          setState(() {
+            _downloadingKeys.remove(key);
+            _batchCompleted += 1;
+          });
+        }
+      }
+
+      if (!mounted) {
+        break;
+      }
+    }
+
+    if (!mounted) {
+      return;
+    }
+
+    final successCount = surahs.length - failed;
+    setState(() {
+      _isBatchDownloading = false;
+      _offlineCountRefreshTick += 1;
+    });
+
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          '${l10n.tr('batchDownloadCompleted')}: $successCount/${surahs.length}',
+        ),
+      ),
+    );
+  }
+
+  Future<void> _clearReciterDownloads(
+    BuildContext context,
+    DownloadService downloadService,
+  ) async {
+    final l10n = context.l10n;
+    final messenger = ScaffoldMessenger.of(context);
+    final deleted =
+        await downloadService.clearReciterDownloads(_selectedReciterId);
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _offlineCountRefreshTick += 1;
+    });
+
+    messenger.showSnackBar(
+      SnackBar(content: Text('${l10n.tr('deletedOfflineFiles')}: $deleted')),
     );
   }
 }

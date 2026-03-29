@@ -17,6 +17,10 @@ class DownloadService {
     return '${reciterId}_$surahId.mp3'.replaceAll('/', '_');
   }
 
+  String _reciterPrefix(String reciterId) {
+    return '${reciterId}_'.replaceAll('/', '_');
+  }
+
   Future<File> getAudioFile({
     required String reciterId,
     required int surahId,
@@ -32,6 +36,43 @@ class DownloadService {
   }) async {
     final file = await getAudioFile(reciterId: reciterId, surahId: surahId);
     return file.exists();
+  }
+
+  Future<int> downloadedCountForReciter(String reciterId) async {
+    final dir = await _audioDirectory();
+    final prefix = _reciterPrefix(reciterId);
+    final entities = await dir.list().toList();
+    var count = 0;
+    for (final entity in entities) {
+      if (entity is! File) {
+        continue;
+      }
+      final name =
+          entity.uri.pathSegments.isEmpty ? '' : entity.uri.pathSegments.last;
+      if (name.startsWith(prefix) && name.endsWith('.mp3')) {
+        count += 1;
+      }
+    }
+    return count;
+  }
+
+  Future<int> clearReciterDownloads(String reciterId) async {
+    final dir = await _audioDirectory();
+    final prefix = _reciterPrefix(reciterId);
+    final entities = await dir.list().toList();
+    var removed = 0;
+    for (final entity in entities) {
+      if (entity is! File) {
+        continue;
+      }
+      final name =
+          entity.uri.pathSegments.isEmpty ? '' : entity.uri.pathSegments.last;
+      if (name.startsWith(prefix) && name.endsWith('.mp3')) {
+        await entity.delete();
+        removed += 1;
+      }
+    }
+    return removed;
   }
 
   Future<File> downloadSurahAudio({
