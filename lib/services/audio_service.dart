@@ -87,6 +87,8 @@ class QuranAudioService {
 
   String? _activeSource;
   bool _activeSourceIsLocal = false;
+  int? _activeSurahId;
+  String? _activeReciterId;
   Duration _lastPosition = Duration.zero;
   bool _shouldAutoRecover = false;
   bool _isRecovering = false;
@@ -145,6 +147,8 @@ class QuranAudioService {
       await _player.play();
       _activeSource = localFile.path;
       _activeSourceIsLocal = true;
+      _activeSurahId = surahId;
+      _activeReciterId = reciter;
       return;
     }
 
@@ -160,6 +164,8 @@ class QuranAudioService {
         await _player.play();
         _activeSource = url;
         _activeSourceIsLocal = false;
+        _activeSurahId = surahId;
+        _activeReciterId = reciter;
         return;
       } catch (error) {
         lastError = error;
@@ -179,7 +185,25 @@ class QuranAudioService {
     _shouldAutoRecover = false;
     _recoveryAttempts = 0;
     _lastPosition = Duration.zero;
+    _activeSurahId = null;
+    _activeReciterId = null;
     await _player.stop();
+  }
+
+  bool canResume({required int surahId, required String reciterId}) {
+    final hasSource = _activeSource != null;
+    final sameTarget =
+        _activeSurahId == surahId && _activeReciterId == reciterId;
+    return hasSource && sameTarget;
+  }
+
+  Future<void> resume() async {
+    if (_activeSource == null) {
+      return;
+    }
+    _isManuallyStopped = false;
+    _shouldAutoRecover = true;
+    await _player.play();
   }
 
   Future<void> dispose() async {

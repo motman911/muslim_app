@@ -34,6 +34,18 @@ class QuickAccessGrid extends StatelessWidget {
       sub: '247.3°',
       route: '/qibla',
     ),
+    _QuickItem(
+      icon: Icons.access_time_filled_rounded,
+      label: 'الصلاة',
+      sub: 'المواقيت',
+      route: '/prayer-times',
+    ),
+    _QuickItem(
+      icon: Icons.settings_rounded,
+      label: 'الإعدادات',
+      sub: 'الواجهة والحساب',
+      route: '/settings',
+    ),
   ];
 
   @override

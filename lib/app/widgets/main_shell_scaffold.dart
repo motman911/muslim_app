@@ -18,18 +18,8 @@ class MainShellScaffold extends ConsumerWidget {
     _NavTab(path: '/home', icon: Icons.home_rounded, labelKey: 'home'),
     _NavTab(path: '/quran', icon: Icons.menu_book_rounded, labelKey: 'quran'),
     _NavTab(path: '/audio', icon: Icons.graphic_eq_rounded, labelKey: 'audio'),
-    _NavTab(
-      path: '/prayer-times',
-      icon: Icons.access_time_filled_rounded,
-      labelKey: 'prayerTimes',
-    ),
     _NavTab(path: '/azkar', icon: Icons.favorite_rounded, labelKey: 'azkar'),
     _NavTab(path: '/qibla', icon: Icons.explore_rounded, labelKey: 'qibla'),
-    _NavTab(
-      path: '/settings',
-      icon: Icons.settings_rounded,
-      labelKey: 'settings',
-    ),
   ];
 
   @override

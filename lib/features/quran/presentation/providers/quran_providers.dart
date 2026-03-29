@@ -136,6 +136,19 @@ class QuranAudioController extends StateNotifier<QuranAudioState> {
       return;
     }
 
+    if (isCurrent &&
+        !state.isPlaying &&
+        selectedReciterId == state.currentReciterId &&
+        _audioService.canResume(
+          surahId: surah.id,
+          reciterId: selectedReciterId,
+        )) {
+      await _audioService.resume();
+      state =
+          state.copyWith(isPlaying: true, isLoading: false, clearError: true);
+      return;
+    }
+
     try {
       state = state.copyWith(
         isLoading: true,
@@ -185,6 +198,18 @@ class QuranAudioController extends StateNotifier<QuranAudioState> {
       return;
     }
 
+    if (state.currentSurahId == surahId &&
+        !state.isPlaying &&
+        _audioService.canResume(
+          surahId: surahId,
+          reciterId: state.currentReciterId,
+        )) {
+      await _audioService.resume();
+      state =
+          state.copyWith(isPlaying: true, isLoading: false, clearError: true);
+      return;
+    }
+
     try {
       state = state.copyWith(
         isLoading: true,
@@ -204,6 +229,37 @@ class QuranAudioController extends StateNotifier<QuranAudioState> {
         isLoading: false,
         errorMessage: 'Failed to play recitation',
       );
+    }
+  }
+
+  Future<void> switchReciter(String reciterId) async {
+    if (reciterId == state.currentReciterId) {
+      return;
+    }
+
+    final currentSurahId = state.currentSurahId;
+    final currentSurahName = state.currentSurahName;
+    state = state.copyWith(currentReciterId: reciterId, clearError: true);
+
+    if (currentSurahId == null) {
+      return;
+    }
+
+    try {
+      state = state.copyWith(isLoading: true, clearError: true);
+      await _audioService.playSurah(
+          surahId: currentSurahId, reciter: reciterId);
+      state =
+          state.copyWith(isPlaying: true, isLoading: false, clearError: true);
+    } catch (_) {
+      state = state.copyWith(
+        isPlaying: false,
+        isLoading: false,
+        errorMessage: 'Failed to play recitation',
+      );
+      if (currentSurahName != null) {
+        state = state.copyWith(currentSurahName: currentSurahName);
+      }
     }
   }
 }
@@ -248,6 +304,35 @@ final quranAudioProgressProvider = Provider<double>((ref) {
 
   final progress = position.inMilliseconds / duration.inMilliseconds;
   return progress.clamp(0, 1);
+});
+
+final currentPlayingAyahNumberProvider =
+    Provider.family<int?, int>((ref, surahId) {
+  final audioState = ref.watch(quranAudioControllerProvider);
+  if (audioState.currentSurahId != surahId) {
+    return null;
+  }
+
+  final ayahs = ref.watch(surahAyahsProvider(surahId)).valueOrNull;
+  if (ayahs == null || ayahs.isEmpty) {
+    return null;
+  }
+
+  final sortedAyahs = [...ayahs]
+    ..sort((a, b) => a.ayahNumber.compareTo(b.ayahNumber));
+  final position = ref.watch(quranAudioPositionProvider).value ?? Duration.zero;
+  final duration = ref.watch(quranAudioDurationProvider).value ?? Duration.zero;
+
+  if (duration.inMilliseconds <= 0) {
+    return sortedAyahs.first.ayahNumber;
+  }
+
+  final ratio =
+      (position.inMilliseconds / duration.inMilliseconds).clamp(0.0, 1.0);
+  final index = (ratio * (sortedAyahs.length - 1))
+      .round()
+      .clamp(0, sortedAyahs.length - 1);
+  return sortedAyahs[index].ayahNumber;
 });
 
 final readingProgressSyncServiceProvider = Provider<ReadingProgressSyncService>(

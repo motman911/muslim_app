@@ -27,8 +27,10 @@ class SurahReadingPage extends ConsumerStatefulWidget {
 
 class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
   final ScrollController _scrollController = ScrollController();
+  final Map<int, GlobalKey> _ayahKeys = <int, GlobalKey>{};
   double _scrollProgress = 0.0;
   int? _highlightedAyah;
+  int? _lastPlaybackAyah;
 
   @override
   void initState() {
@@ -75,6 +77,10 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
     final firebaseReady = ref.watch(firebaseReadyProvider);
     final deviceId = ref.watch(deviceIdProvider);
     final ayahs = ayahsAsync.valueOrNull;
+    final playbackAyah =
+        ref.watch(currentPlayingAyahNumberProvider(widget.surahId));
+
+    _syncPlaybackHighlight(playbackAyah);
 
     final surahName = surahsAsync.maybeWhen(
       data: (surahs) {
@@ -218,11 +224,16 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
                             SizedBox(height: 10.h),
                             ...ayahsInPage.map(
                               (ayah) => Padding(
+                                key: _ayahKeys.putIfAbsent(
+                                  ayah.ayahNumber,
+                                  () => GlobalKey(),
+                                ),
                                 padding: EdgeInsets.only(bottom: 14.h),
                                 child: AyahWidget(
                                   ayah: ayah,
                                   highlight:
-                                      _highlightedAyah == ayah.ayahNumber,
+                                      (playbackAyah ?? _highlightedAyah) ==
+                                          ayah.ayahNumber,
                                   onTap: () async {
                                     setState(() {
                                       _highlightedAyah = ayah.ayahNumber;
@@ -382,5 +393,30 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
           juzNumber: ayah.juzNumber,
           deviceId: deviceId,
         );
+  }
+
+  void _syncPlaybackHighlight(int? playbackAyah) {
+    if (playbackAyah == null || playbackAyah == _lastPlaybackAyah) {
+      return;
+    }
+
+    _lastPlaybackAyah = playbackAyah;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+
+      final ayahContext = _ayahKeys[playbackAyah]?.currentContext;
+      if (ayahContext == null) {
+        return;
+      }
+
+      Scrollable.ensureVisible(
+        ayahContext,
+        duration: const Duration(milliseconds: 260),
+        alignment: 0.2,
+        curve: Curves.easeOutCubic,
+      );
+    });
   }
 }

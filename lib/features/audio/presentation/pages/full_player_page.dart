@@ -105,6 +105,31 @@ class _FullPlayerPageState extends ConsumerState<FullPlayerPage> {
               textAlign: TextAlign.center,
               style: AppTextStyles.caption,
             ),
+            SizedBox(height: 10.h),
+            DropdownButtonFormField<String>(
+              initialValue: audioState.currentReciterId,
+              decoration: InputDecoration(
+                labelText: l10n.tr('reciter'),
+                border: const OutlineInputBorder(),
+                isDense: true,
+              ),
+              items: QuranAudioService.reciters
+                  .map(
+                    (item) => DropdownMenuItem<String>(
+                      value: item.id,
+                      child: Text(item.name),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (value) {
+                if (value == null) {
+                  return;
+                }
+                ref
+                    .read(quranAudioControllerProvider.notifier)
+                    .switchReciter(value);
+              },
+            ),
             SizedBox(height: 24.h),
             SliderTheme(
               data: SliderThemeData(
@@ -136,6 +161,25 @@ class _FullPlayerPageState extends ConsumerState<FullPlayerPage> {
               '${_format(position)} / ${_format(duration)}',
               textAlign: TextAlign.center,
               style: AppTextStyles.tiny,
+            ),
+            SizedBox(height: 8.h),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  onPressed:
+                      canControl ? () => _seekRelative(seconds: -10) : null,
+                  icon: const Icon(Icons.replay_10_rounded),
+                  tooltip: '-10s',
+                ),
+                SizedBox(width: 10.w),
+                IconButton(
+                  onPressed:
+                      canControl ? () => _seekRelative(seconds: 10) : null,
+                  icon: const Icon(Icons.forward_10_rounded),
+                  tooltip: '+10s',
+                ),
+              ],
             ),
             SizedBox(height: 24.h),
             AudioControls(
@@ -292,5 +336,21 @@ class _FullPlayerPageState extends ConsumerState<FullPlayerPage> {
     final minutes = (totalSeconds ~/ 60).toString().padLeft(2, '0');
     final seconds = (totalSeconds % 60).toString().padLeft(2, '0');
     return '$minutes:$seconds';
+  }
+
+  Future<void> _seekRelative({required int seconds}) async {
+    final player = ref.read(quranAudioServiceProvider).player;
+    final current = player.position;
+    final duration = player.duration ?? Duration.zero;
+
+    var target = current + Duration(seconds: seconds);
+    if (target < Duration.zero) {
+      target = Duration.zero;
+    }
+    if (duration > Duration.zero && target > duration) {
+      target = duration;
+    }
+
+    await player.seek(target);
   }
 }
