@@ -116,6 +116,25 @@ class _FullPlayerPageState extends ConsumerState<FullPlayerPage> {
                       '${l10n.tr('reciter')}: $reciterName',
                       style: AppTextStyles.caption,
                     ),
+                    SizedBox(height: 8.h),
+                    Wrap(
+                      spacing: 6.w,
+                      runSpacing: 6.h,
+                      children: [
+                        _ModeChip(
+                          label: shuffleEnabled ? 'Shuffle On' : 'Shuffle Off',
+                          active: shuffleEnabled,
+                        ),
+                        _ModeChip(
+                          label: switch (loopMode) {
+                            LoopMode.one => 'Repeat One',
+                            LoopMode.all => 'Repeat All',
+                            LoopMode.off => 'Repeat Off',
+                          },
+                          active: loopMode != LoopMode.off,
+                        ),
+                      ],
+                    ),
                     if (activeAyah != null) ...[
                       SizedBox(height: 6.h),
                       Row(
@@ -383,5 +402,36 @@ class _FullPlayerPageState extends ConsumerState<FullPlayerPage> {
     }
 
     await player.seek(target);
+  }
+}
+
+class _ModeChip extends StatelessWidget {
+  const _ModeChip({
+    required this.label,
+    required this.active,
+  });
+
+  final String label;
+  final bool active;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+      decoration: BoxDecoration(
+        color: active ? AppColors.goldSubtle : AppColors.darkBgSecondary,
+        borderRadius: BorderRadius.circular(99.r),
+        border: Border.all(
+          color: active ? AppColors.borderActive : AppColors.border,
+        ),
+      ),
+      child: Text(
+        label,
+        style: AppTextStyles.tiny.copyWith(
+          color: active ? AppColors.goldPrimary : AppColors.textSecondary,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
   }
 }

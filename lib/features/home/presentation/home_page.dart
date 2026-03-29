@@ -117,6 +117,34 @@ class _HomeHeader extends StatelessWidget {
                     'رحلة يومية مع القرآن والاذكار',
                     style: AppTextStyles.caption,
                   ),
+                  SizedBox(height: 8.h),
+                  Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                    decoration: BoxDecoration(
+                      color: AppColors.goldSubtle,
+                      borderRadius: BorderRadius.circular(99.r),
+                      border: Border.all(color: AppColors.borderActive),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.offline_bolt_rounded,
+                          size: 14.sp,
+                          color: AppColors.goldPrimary,
+                        ),
+                        SizedBox(width: 6.w),
+                        Text(
+                          'جاهز بدون إنترنت',
+                          style: AppTextStyles.tiny.copyWith(
+                            color: AppColors.goldPrimary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),

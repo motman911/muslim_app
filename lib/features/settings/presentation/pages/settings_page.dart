@@ -423,8 +423,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  l10n.tr('accessibilityPresets'),
-                  style: Theme.of(context).textTheme.titleMedium,
+                  'اختر النمط المناسب لطريقة قراءتك',
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
                 SizedBox(height: 10.h),
                 Wrap(
