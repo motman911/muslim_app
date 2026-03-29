@@ -418,6 +418,10 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
           surahId: surah.id,
           reciterId: _selectedReciterId,
         ),
+        sourceUrls: QuranAudioService.resolveSurahCandidateUrls(
+          surahId: surah.id,
+          reciterId: _selectedReciterId,
+        ),
         onProgress: (value) {
           if (!mounted) {
             return;
@@ -503,6 +507,10 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
           surahId: surah.id,
           reciterId: _selectedReciterId,
           sourceUrl: QuranAudioService.resolveSurahUrl(
+            surahId: surah.id,
+            reciterId: _selectedReciterId,
+          ),
+          sourceUrls: QuranAudioService.resolveSurahCandidateUrls(
             surahId: surah.id,
             reciterId: _selectedReciterId,
           ),

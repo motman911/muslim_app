@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:just_audio/just_audio.dart';
 
 import 'download_service.dart';
@@ -19,7 +21,24 @@ class QuranReciter {
 class QuranAudioService {
   QuranAudioService({DownloadService? downloadService})
       : _player = AudioPlayer(),
-        _downloadService = downloadService ?? DownloadService();
+        _downloadService = downloadService ?? DownloadService() {
+    _positionSub = _player.positionStream.listen((position) {
+      _lastPosition = position;
+    });
+
+    _playerStateSub = _player.playerStateStream.listen((state) {
+      if (state.processingState == ProcessingState.completed) {
+        _shouldAutoRecover = false;
+        _recoveryAttempts = 0;
+      }
+
+      if (state.processingState == ProcessingState.idle &&
+          _shouldAutoRecover &&
+          !_isRecovering) {
+        _attemptAutoRecovery();
+      }
+    });
+  }
 
   static const reciters = <QuranReciter>[
     QuranReciter(
@@ -61,10 +80,22 @@ class QuranAudioService {
 
   final AudioPlayer _player;
   final DownloadService _downloadService;
+  static const int _maxRecoveryAttempts = 3;
+
+  StreamSubscription<Duration>? _positionSub;
+  StreamSubscription<PlayerState>? _playerStateSub;
+
+  String? _activeSource;
+  bool _activeSourceIsLocal = false;
+  Duration _lastPosition = Duration.zero;
+  bool _shouldAutoRecover = false;
+  bool _isRecovering = false;
+  bool _isManuallyStopped = false;
+  int _recoveryAttempts = 0;
 
   AudioPlayer get player => _player;
 
-  static String resolveSurahUrl({
+  static List<String> resolveSurahCandidateUrls({
     required int surahId,
     required String reciterId,
   }) {
@@ -75,17 +106,35 @@ class QuranAudioService {
 
     if (reciter.serverBaseUrl != null) {
       final padded = surahId.toString().padLeft(3, '0');
-      return '${reciter.serverBaseUrl}$padded.mp3';
+      return <String>['${reciter.serverBaseUrl}$padded.mp3'];
     }
 
     final cdnId = reciter.cdnIdentifier ?? reciterId;
-    return 'https://cdn.islamic.network/quran/audio-surah/128/$cdnId/$surahId.mp3';
+    return <String>[
+      'https://cdn.islamic.network/quran/audio-surah/128/$cdnId/$surahId.mp3',
+      'https://cdn.islamic.network/quran/audio-surah/64/$cdnId/$surahId.mp3',
+    ];
+  }
+
+  static String resolveSurahUrl({
+    required int surahId,
+    required String reciterId,
+  }) {
+    return resolveSurahCandidateUrls(
+      surahId: surahId,
+      reciterId: reciterId,
+    ).first;
   }
 
   Future<void> playSurah({
     required int surahId,
     String reciter = 'ar.alafasy',
   }) async {
+    _isManuallyStopped = false;
+    _shouldAutoRecover = true;
+    _recoveryAttempts = 0;
+    _lastPosition = Duration.zero;
+
     final localFile = await _downloadService.getAudioFile(
       reciterId: reciter,
       surahId: surahId,
@@ -94,17 +143,81 @@ class QuranAudioService {
     if (await localFile.exists()) {
       await _player.setFilePath(localFile.path);
       await _player.play();
+      _activeSource = localFile.path;
+      _activeSourceIsLocal = true;
       return;
     }
 
-    final url = resolveSurahUrl(surahId: surahId, reciterId: reciter);
-    await _player.setUrl(url);
-    await _player.play();
+    final candidateUrls = resolveSurahCandidateUrls(
+      surahId: surahId,
+      reciterId: reciter,
+    );
+
+    Object? lastError;
+    for (final url in candidateUrls) {
+      try {
+        await _player.setUrl(url);
+        await _player.play();
+        _activeSource = url;
+        _activeSourceIsLocal = false;
+        return;
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    throw lastError ?? Exception('Failed to play recitation');
   }
 
-  Future<void> pause() => _player.pause();
+  Future<void> pause() async {
+    _shouldAutoRecover = false;
+    await _player.pause();
+  }
 
-  Future<void> stop() => _player.stop();
+  Future<void> stop() async {
+    _isManuallyStopped = true;
+    _shouldAutoRecover = false;
+    _recoveryAttempts = 0;
+    _lastPosition = Duration.zero;
+    await _player.stop();
+  }
 
-  Future<void> dispose() => _player.dispose();
+  Future<void> dispose() async {
+    await _positionSub?.cancel();
+    await _playerStateSub?.cancel();
+    await _player.dispose();
+  }
+
+  Future<void> _attemptAutoRecovery() async {
+    if (_isManuallyStopped || _activeSource == null) {
+      return;
+    }
+
+    if (_recoveryAttempts >= _maxRecoveryAttempts) {
+      _shouldAutoRecover = false;
+      return;
+    }
+
+    _isRecovering = true;
+    _recoveryAttempts += 1;
+
+    try {
+      if (_activeSourceIsLocal) {
+        await _player.setFilePath(
+          _activeSource!,
+          initialPosition: _lastPosition,
+        );
+      } else {
+        await _player.setUrl(
+          _activeSource!,
+          initialPosition: _lastPosition,
+        );
+      }
+      await _player.play();
+    } catch (_) {
+      // Keep retry attempts bounded to avoid looping forever.
+    } finally {
+      _isRecovering = false;
+    }
+  }
 }

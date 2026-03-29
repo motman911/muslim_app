@@ -148,17 +148,44 @@ class DownloadService {
     required int surahId,
     required String reciterId,
     String? sourceUrl,
+    List<String>? sourceUrls,
     void Function(double progress)? onProgress,
   }) async {
-    final url = Uri.parse(
-      sourceUrl ??
-          'https://cdn.islamic.network/quran/audio-surah/128/$reciterId/$surahId.mp3',
-    );
+    final candidates = <String>[
+      ...?sourceUrls,
+      if (sourceUrl != null) sourceUrl,
+      'https://cdn.islamic.network/quran/audio-surah/128/$reciterId/$surahId.mp3',
+    ];
 
+    Object? lastError;
+    for (final candidate in candidates.toSet()) {
+      try {
+        return await _downloadFromSource(
+          surahId: surahId,
+          reciterId: reciterId,
+          source: candidate,
+          onProgress: onProgress,
+        );
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    throw lastError ??
+        Exception('Failed to download audio for surah $surahId.');
+  }
+
+  Future<File> _downloadFromSource({
+    required int surahId,
+    required String reciterId,
+    required String source,
+    void Function(double progress)? onProgress,
+  }) async {
+    final url = Uri.parse(source);
     final request = http.Request('GET', url);
     final streamedResponse = await request.send();
     if (streamedResponse.statusCode != 200) {
-      throw Exception('Failed to download audio for surah $surahId.');
+      throw Exception('Failed to download from source: $source');
     }
 
     final file = await getAudioFile(reciterId: reciterId, surahId: surahId);
