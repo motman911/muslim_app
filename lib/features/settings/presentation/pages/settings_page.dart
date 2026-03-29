@@ -435,7 +435,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               children: [
                 Text(l10n.tr('preview'),
                     style: Theme.of(context).textTheme.titleMedium),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 Text(
                   l10n.tr('previewBody'),
                   style: Theme.of(context).textTheme.bodyLarge,
@@ -538,7 +538,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 controller: emailController,
                 decoration: InputDecoration(labelText: l10n.tr('email')),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8.h),
               TextField(
                 controller: passwordController,
                 decoration: InputDecoration(labelText: l10n.tr('password')),
@@ -682,14 +682,14 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     '${l10n.tr('step')} ${currentStep + 1}/${steps.length}',
                     style: Theme.of(context).textTheme.labelMedium,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   Text(
                     step.title,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   Text(step.body),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10.h),
                   CheckboxListTile.adaptive(
                     contentPadding: EdgeInsets.zero,
                     controlAffinity: ListTileControlAffinity.leading,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -11,7 +12,7 @@ class AyahOfDayCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return NoorCard(
       margin: EdgeInsets.zero,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16.r),
       child: Container(
         decoration: BoxDecoration(
           gradient: const LinearGradient(
@@ -19,10 +20,10 @@ class AyahOfDayCard extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           border: Border.all(color: AppColors.goldPrimary, width: 1),
         ),
-        padding: const EdgeInsets.all(14),
+        padding: EdgeInsets.all(14.r),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -37,15 +38,15 @@ class AyahOfDayCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
             Text(
               'فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ',
               textAlign: TextAlign.center,
               style: AppTextStyles.quranNormal,
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
             Text('البقرة - 152', style: AppTextStyles.caption),
-            const SizedBox(height: 6),
+            SizedBox(height: 6.h),
             Row(
               children: [
                 IconButton(

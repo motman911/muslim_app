@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -21,17 +22,17 @@ class ContinueReadingCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('اكمل القراءة', style: AppTextStyles.h3),
-                const SizedBox(height: 6),
+                SizedBox(height: 6.h),
                 Text(
                   'سورة الكهف - الصفحة 304',
                   style: AppTextStyles.caption,
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 Container(
-                  height: 5,
+                  height: 5.h,
                   decoration: BoxDecoration(
                     color: AppColors.darkSurface,
-                    borderRadius: BorderRadius.circular(99),
+                    borderRadius: BorderRadius.circular(99.r),
                   ),
                   child: FractionallySizedBox(
                     widthFactor: 0.54,
@@ -39,7 +40,7 @@ class ContinueReadingCard extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         color: AppColors.goldPrimary,
-                        borderRadius: BorderRadius.circular(99),
+                        borderRadius: BorderRadius.circular(99.r),
                       ),
                     ),
                   ),
@@ -47,7 +48,7 @@ class ContinueReadingCard extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12.w),
           NoorButton(
             label: 'متابعة',
             icon: Icons.arrow_forward_rounded,
