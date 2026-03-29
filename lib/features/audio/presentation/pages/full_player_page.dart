@@ -58,6 +58,10 @@ class _FullPlayerPageState extends ConsumerState<FullPlayerPage> {
       orElse: () => QuranAudioService.reciters.first,
     );
     final reciterName = reciter.name;
+    final activeAyah = audioState.currentSurahId == null
+        ? null
+        : ref.watch(
+            currentPlayingAyahNumberProvider(audioState.currentSurahId!));
 
     return Scaffold(
       appBar: AppBar(
@@ -74,193 +78,220 @@ class _FullPlayerPageState extends ConsumerState<FullPlayerPage> {
           ),
         ],
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.r),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(
-              child: Container(
-                width: 200.w,
-                height: 200.w,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24.r),
-                  gradient: const LinearGradient(
-                    colors: [AppColors.goldPrimary, AppColors.goldLight],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: Icon(Icons.menu_book_rounded, size: 80.sp),
-              ),
-            ),
-            SizedBox(height: 20.h),
-            Text(
-              audioState.currentSurahName ?? 'لا يوجد تشغيل',
-              textAlign: TextAlign.center,
-              style: AppTextStyles.h2,
-            ),
-            Text(
-              reciterName,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.caption,
-            ),
-            SizedBox(height: 10.h),
-            DropdownButtonFormField<String>(
-              initialValue: audioState.currentReciterId,
-              decoration: InputDecoration(
-                labelText: l10n.tr('reciter'),
-                border: const OutlineInputBorder(),
-                isDense: true,
-              ),
-              items: QuranAudioService.reciters
-                  .map(
-                    (item) => DropdownMenuItem<String>(
-                      value: item.id,
-                      child: Text(item.name),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16.r),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 200.w,
+                  height: 200.w,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24.r),
+                    gradient: const LinearGradient(
+                      colors: [AppColors.goldPrimary, AppColors.goldLight],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                  )
-                  .toList(),
-              onChanged: (value) {
-                if (value == null) {
-                  return;
-                }
-                ref
-                    .read(quranAudioControllerProvider.notifier)
-                    .switchReciter(value);
-              },
-            ),
-            SizedBox(height: 24.h),
-            SliderTheme(
-              data: SliderThemeData(
-                activeTrackColor: AppColors.goldPrimary,
-                inactiveTrackColor: AppColors.darkBgElevated,
-                thumbColor: AppColors.goldPrimary,
-                thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.r),
-                trackHeight: 3.h,
-                overlayShape: SliderComponentShape.noOverlay,
+                  ),
+                  child: Icon(Icons.menu_book_rounded, size: 80.sp),
+                ),
               ),
-              child: Slider(
-                value: progress,
-                onChanged: canControl
-                    ? (value) {
-                        final totalMs = duration.inMilliseconds;
-                        if (totalMs <= 0) {
-                          return;
+              SizedBox(height: 20.h),
+              NoorCard(
+                margin: EdgeInsets.zero,
+                highlight: isActuallyPlaying,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      audioState.currentSurahName ?? 'لا يوجد تشغيل',
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.h2,
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      '${l10n.tr('reciter')}: $reciterName',
+                      style: AppTextStyles.caption,
+                    ),
+                    if (activeAyah != null) ...[
+                      SizedBox(height: 6.h),
+                      Row(
+                        children: [
+                          Icon(Icons.graphic_eq_rounded,
+                              size: 16.sp, color: AppColors.goldPrimary),
+                          SizedBox(width: 6.w),
+                          Text(
+                            '${l10n.tr('ayah')} $activeAyah',
+                            style: AppTextStyles.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              SizedBox(height: 14.h),
+              DropdownButtonFormField<String>(
+                initialValue: audioState.currentReciterId,
+                decoration: InputDecoration(
+                  labelText: l10n.tr('reciter'),
+                  border: const OutlineInputBorder(),
+                  isDense: true,
+                ),
+                items: QuranAudioService.reciters
+                    .map(
+                      (item) => DropdownMenuItem<String>(
+                        value: item.id,
+                        child: Text(item.name),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value == null) {
+                    return;
+                  }
+                  ref
+                      .read(quranAudioControllerProvider.notifier)
+                      .switchReciter(value);
+                },
+              ),
+              SizedBox(height: 24.h),
+              SliderTheme(
+                data: SliderThemeData(
+                  activeTrackColor: AppColors.goldPrimary,
+                  inactiveTrackColor: AppColors.darkBgElevated,
+                  thumbColor: AppColors.goldPrimary,
+                  thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.r),
+                  trackHeight: 3.h,
+                  overlayShape: SliderComponentShape.noOverlay,
+                ),
+                child: Slider(
+                  value: progress,
+                  onChanged: canControl
+                      ? (value) {
+                          final totalMs = duration.inMilliseconds;
+                          if (totalMs <= 0) {
+                            return;
+                          }
+                          final next = Duration(
+                            milliseconds: (totalMs * value).round(),
+                          );
+                          ref.read(quranAudioServiceProvider).player.seek(next);
                         }
-                        final next = Duration(
-                          milliseconds: (totalMs * value).round(),
-                        );
-                        ref.read(quranAudioServiceProvider).player.seek(next);
+                      : null,
+                ),
+              ),
+              SizedBox(height: 6.h),
+              Text(
+                '${_format(position)} / ${_format(duration)}',
+                textAlign: TextAlign.center,
+                style: AppTextStyles.tiny,
+              ),
+              SizedBox(height: 8.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed:
+                        canControl ? () => _seekRelative(seconds: -10) : null,
+                    icon: const Icon(Icons.replay_10_rounded),
+                    tooltip: '-10s',
+                  ),
+                  SizedBox(width: 10.w),
+                  IconButton(
+                    onPressed:
+                        canControl ? () => _seekRelative(seconds: 10) : null,
+                    icon: const Icon(Icons.forward_10_rounded),
+                    tooltip: '+10s',
+                  ),
+                ],
+              ),
+              SizedBox(height: 24.h),
+              AudioControls(
+                isPlaying: isActuallyPlaying,
+                isShuffleEnabled: shuffleEnabled,
+                isRepeatEnabled: loopMode != LoopMode.off,
+                onPlayPause: canControl
+                    ? () {
+                        ref
+                            .read(quranAudioControllerProvider.notifier)
+                            .toggleQuick(
+                              surahId: audioState.currentSurahId!,
+                              surahName: audioState.currentSurahName ??
+                                  '${audioState.currentSurahId}',
+                            );
+                      }
+                    : null,
+                onPrevious: canControl
+                    ? () => _playRelativeSurah(
+                          delta: -1,
+                          currentSurahId: audioState.currentSurahId!,
+                          sortedSurahs: sortedSurahs,
+                        )
+                    : null,
+                onNext: canControl
+                    ? () => _playRelativeSurah(
+                          delta: 1,
+                          currentSurahId: audioState.currentSurahId!,
+                          sortedSurahs: sortedSurahs,
+                        )
+                    : null,
+                onShuffle: canControl
+                    ? () async {
+                        final player =
+                            ref.read(quranAudioServiceProvider).player;
+                        await player.setShuffleModeEnabled(!shuffleEnabled);
+                      }
+                    : null,
+                onRepeat: canControl
+                    ? () async {
+                        final player =
+                            ref.read(quranAudioServiceProvider).player;
+                        final nextMode = switch (loopMode) {
+                          LoopMode.off => LoopMode.one,
+                          LoopMode.one => LoopMode.all,
+                          LoopMode.all => LoopMode.off,
+                        };
+                        await player.setLoopMode(nextMode);
                       }
                     : null,
               ),
-            ),
-            SizedBox(height: 6.h),
-            Text(
-              '${_format(position)} / ${_format(duration)}',
-              textAlign: TextAlign.center,
-              style: AppTextStyles.tiny,
-            ),
-            SizedBox(height: 8.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  onPressed:
-                      canControl ? () => _seekRelative(seconds: -10) : null,
-                  icon: const Icon(Icons.replay_10_rounded),
-                  tooltip: '-10s',
+              SizedBox(height: 20.h),
+              NoorCard(
+                margin: EdgeInsets.zero,
+                child: Text(
+                  '${l10n.tr('playbackSpeed')}: ${ref.read(quranAudioServiceProvider).player.speed.toStringAsFixed(1)}x  •  ${l10n.tr('sleepTimer')}: ${_sleepRemainingSeconds == 0 ? l10n.tr('disabled') : _formatSleepRemaining(_sleepRemainingSeconds)}',
                 ),
-                SizedBox(width: 10.w),
-                IconButton(
-                  onPressed:
-                      canControl ? () => _seekRelative(seconds: 10) : null,
-                  icon: const Icon(Icons.forward_10_rounded),
-                  tooltip: '+10s',
-                ),
-              ],
-            ),
-            SizedBox(height: 24.h),
-            AudioControls(
-              isPlaying: isActuallyPlaying,
-              isShuffleEnabled: shuffleEnabled,
-              isRepeatEnabled: loopMode != LoopMode.off,
-              onPlayPause: canControl
-                  ? () {
-                      ref
-                          .read(quranAudioControllerProvider.notifier)
-                          .toggleQuick(
-                            surahId: audioState.currentSurahId!,
-                            surahName: audioState.currentSurahName ??
-                                '${audioState.currentSurahId}',
-                          );
-                    }
-                  : null,
-              onPrevious: canControl
-                  ? () => _playRelativeSurah(
-                        delta: -1,
-                        currentSurahId: audioState.currentSurahId!,
-                        sortedSurahs: sortedSurahs,
-                      )
-                  : null,
-              onNext: canControl
-                  ? () => _playRelativeSurah(
-                        delta: 1,
-                        currentSurahId: audioState.currentSurahId!,
-                        sortedSurahs: sortedSurahs,
-                      )
-                  : null,
-              onShuffle: canControl
-                  ? () async {
-                      final player = ref.read(quranAudioServiceProvider).player;
-                      await player.setShuffleModeEnabled(!shuffleEnabled);
-                    }
-                  : null,
-              onRepeat: canControl
-                  ? () async {
-                      final player = ref.read(quranAudioServiceProvider).player;
-                      final nextMode = switch (loopMode) {
-                        LoopMode.off => LoopMode.one,
-                        LoopMode.one => LoopMode.all,
-                        LoopMode.all => LoopMode.off,
-                      };
-                      await player.setLoopMode(nextMode);
-                    }
-                  : null,
-            ),
-            SizedBox(height: 20.h),
-            NoorCard(
-              margin: EdgeInsets.zero,
-              child: Text(
-                '${l10n.tr('playbackSpeed')}: ${ref.read(quranAudioServiceProvider).player.speed.toStringAsFixed(1)}x  •  ${l10n.tr('sleepTimer')}: ${_sleepRemainingSeconds == 0 ? l10n.tr('disabled') : _formatSleepRemaining(_sleepRemainingSeconds)}',
               ),
-            ),
-            SizedBox(height: 10.h),
-            Wrap(
-              spacing: 8.w,
-              runSpacing: 8.h,
-              children: [
-                OutlinedButton(
-                  onPressed: () => _startSleepTimer(minutes: 10),
-                  child: Text(l10n.tr('sleep10m')),
-                ),
-                OutlinedButton(
-                  onPressed: () => _startSleepTimer(minutes: 20),
-                  child: Text(l10n.tr('sleep20m')),
-                ),
-                OutlinedButton(
-                  onPressed: () => _startSleepTimer(minutes: 30),
-                  child: Text(l10n.tr('sleep30m')),
-                ),
-                TextButton(
-                  onPressed:
-                      _sleepRemainingSeconds == 0 ? null : _cancelSleepTimer,
-                  child: Text(l10n.tr('cancelSleepTimer')),
-                ),
-              ],
-            ),
-          ],
+              SizedBox(height: 10.h),
+              Wrap(
+                spacing: 8.w,
+                runSpacing: 8.h,
+                children: [
+                  OutlinedButton(
+                    onPressed: () => _startSleepTimer(minutes: 10),
+                    child: Text(l10n.tr('sleep10m')),
+                  ),
+                  OutlinedButton(
+                    onPressed: () => _startSleepTimer(minutes: 20),
+                    child: Text(l10n.tr('sleep20m')),
+                  ),
+                  OutlinedButton(
+                    onPressed: () => _startSleepTimer(minutes: 30),
+                    child: Text(l10n.tr('sleep30m')),
+                  ),
+                  TextButton(
+                    onPressed:
+                        _sleepRemainingSeconds == 0 ? null : _cancelSleepTimer,
+                    child: Text(l10n.tr('cancelSleepTimer')),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

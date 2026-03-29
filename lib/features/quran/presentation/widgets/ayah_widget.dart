@@ -34,6 +34,12 @@ class AyahWidget extends StatelessWidget {
         decoration: BoxDecoration(
           color: highlight ? AppColors.goldSubtle : Colors.transparent,
           borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(
+            color: highlight
+                ? AppColors.goldPrimary.withValues(alpha: 0.5)
+                : Colors.transparent,
+            width: 1,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -5,6 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_text_styles.dart';
+import '../../../../services/audio_service.dart';
 import '../../../../shared/providers/firebase_providers.dart';
 import '../../../../shared/widgets/noor_card.dart';
 import '../../data/models/ayah_model.dart';
@@ -79,6 +82,12 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
     final ayahs = ayahsAsync.valueOrNull;
     final playbackAyah =
         ref.watch(currentPlayingAyahNumberProvider(widget.surahId));
+    final audioState = ref.watch(quranAudioControllerProvider);
+    final reciter = QuranAudioService.reciters.firstWhere(
+      (item) => item.id == audioState.currentReciterId,
+      orElse: () => QuranAudioService.reciters.first,
+    );
+    final isThisSurahPlaying = audioState.currentSurahId == widget.surahId;
 
     _syncPlaybackHighlight(playbackAyah);
 
@@ -136,6 +145,47 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
 
           return Column(
             children: [
+              if (isThisSurahPlaying)
+                NoorCard(
+                  margin: EdgeInsets.fromLTRB(12.w, 8.h, 12.w, 0),
+                  highlight: true,
+                  child: Row(
+                    children: [
+                      Icon(Icons.graphic_eq_rounded,
+                          color: AppColors.goldPrimary, size: 18.sp),
+                      SizedBox(width: 8.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${l10n.tr('reciter')}: ${reciter.name}',
+                              style: AppTextStyles.caption,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              playbackAyah == null
+                                  ? l10n.tr('nowPlaying')
+                                  : '${l10n.tr('nowPlaying')} • ${l10n.tr('ayah')} $playbackAyah',
+                              style: AppTextStyles.bodyMedium,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => _seekRelative(seconds: -10),
+                        icon: const Icon(Icons.replay_10_rounded),
+                      ),
+                      IconButton(
+                        onPressed: () => _seekRelative(seconds: 10),
+                        icon: const Icon(Icons.forward_10_rounded),
+                      ),
+                    ],
+                  ),
+                ),
               NoorCard(
                 margin: EdgeInsets.fromLTRB(12.w, 8.h, 12.w, 8.h),
                 child: Column(
@@ -418,5 +468,21 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
         curve: Curves.easeOutCubic,
       );
     });
+  }
+
+  Future<void> _seekRelative({required int seconds}) async {
+    final player = ref.read(quranAudioServiceProvider).player;
+    final current = player.position;
+    final duration = player.duration ?? Duration.zero;
+
+    var target = current + Duration(seconds: seconds);
+    if (target < Duration.zero) {
+      target = Duration.zero;
+    }
+    if (duration > Duration.zero && target > duration) {
+      target = duration;
+    }
+
+    await player.seek(target);
   }
 }
