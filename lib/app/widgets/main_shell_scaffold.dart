@@ -39,6 +39,7 @@ class MainShellScaffold extends ConsumerWidget {
         _tabs.indexWhere((tab) => location.startsWith(tab.path));
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final audioState = ref.watch(quranAudioControllerProvider);
+    final progress = ref.watch(quranAudioProgressProvider);
 
     return Scaffold(
       extendBody: true,
@@ -67,7 +68,7 @@ class MainShellScaffold extends ConsumerWidget {
                       '${l10n.tr('surah')} ${audioState.currentSurahId}',
                   subtitle: l10n.tr('nowPlaying'),
                   isPlaying: audioState.isPlaying,
-                  progress: 0,
+                  progress: progress,
                   onPlayPause: () {
                     if (audioState.currentSurahId == null) {
                       return;

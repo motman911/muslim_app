@@ -1,17 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../quran/presentation/providers/quran_providers.dart';
 import '../../../../shared/widgets/noor_card.dart';
 import '../widgets/audio_controls.dart';
 
-class FullPlayerPage extends StatelessWidget {
+class FullPlayerPage extends ConsumerWidget {
   const FullPlayerPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final audioState = ref.watch(quranAudioControllerProvider);
+    final progress = ref.watch(quranAudioProgressProvider);
+    final position =
+        ref.watch(quranAudioPositionProvider).value ?? Duration.zero;
+    final duration =
+        ref.watch(quranAudioDurationProvider).value ?? Duration.zero;
+    final canControl = audioState.currentSurahId != null;
+
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: canControl
+                ? () {
+                    ref.read(quranAudioControllerProvider.notifier).stop();
+                    Navigator.of(context).maybePop();
+                  }
+                : null,
+            icon: const Icon(Icons.stop_circle_rounded),
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -33,9 +55,9 @@ class FullPlayerPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            Text('سورة الفاتحة',
+            Text(audioState.currentSurahName ?? 'لا يوجد تشغيل',
                 textAlign: TextAlign.center, style: AppTextStyles.h2),
-            Text('مشاري راشد العفاسي',
+            Text(audioState.currentReciterId,
                 textAlign: TextAlign.center, style: AppTextStyles.caption),
             const SizedBox(height: 24),
             SliderTheme(
@@ -47,21 +69,57 @@ class FullPlayerPage extends StatelessWidget {
                 trackHeight: 3,
                 overlayShape: SliderComponentShape.noOverlay,
               ),
-              child: Slider(value: 0.35, onChanged: (_) {}),
+              child: Slider(
+                value: progress,
+                onChanged: canControl
+                    ? (value) {
+                        final totalMs = duration.inMilliseconds;
+                        if (totalMs <= 0) {
+                          return;
+                        }
+                        final next = Duration(
+                          milliseconds: (totalMs * value).round(),
+                        );
+                        ref.read(quranAudioServiceProvider).player.seek(next);
+                      }
+                    : null,
+              ),
             ),
             const SizedBox(height: 6),
-            Text('01:24 / 04:32',
+            Text('${_format(position)} / ${_format(duration)}',
                 textAlign: TextAlign.center, style: AppTextStyles.tiny),
             const SizedBox(height: 24),
-            const AudioControls(),
+            AudioControls(
+              isPlaying: audioState.isPlaying,
+              onPlayPause: canControl
+                  ? () {
+                      ref
+                          .read(quranAudioControllerProvider.notifier)
+                          .toggleQuick(
+                            surahId: audioState.currentSurahId!,
+                            surahName: audioState.currentSurahName ??
+                                '${audioState.currentSurahId}',
+                          );
+                    }
+                  : null,
+            ),
             const SizedBox(height: 20),
-            const NoorCard(
+            NoorCard(
               margin: EdgeInsets.zero,
-              child: Text('سرعة التشغيل: 1.0x  •  مؤقت النوم: غير مفعل'),
+              child: Text(
+                'سرعة التشغيل: ${ref.read(quranAudioServiceProvider).player.speed.toStringAsFixed(1)}x  •  مؤقت النوم: غير مفعل',
+              ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  String _format(Duration value) {
+    final totalSeconds = value.inSeconds;
+    final minutes = (totalSeconds ~/ 60).toString().padLeft(2, '0');
+    final seconds = (totalSeconds % 60).toString().padLeft(2, '0');
+    return '$minutes:$seconds';
   }
 }

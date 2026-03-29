@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:just_audio/just_audio.dart';
 
 import '../../../../services/audio_service.dart';
 import '../../../../services/download_service.dart';
@@ -210,6 +211,33 @@ class QuranAudioController extends StateNotifier<QuranAudioState> {
 final quranAudioControllerProvider =
     StateNotifierProvider<QuranAudioController, QuranAudioState>((ref) {
   return QuranAudioController(ref.watch(quranAudioServiceProvider));
+});
+
+final quranAudioPositionProvider = StreamProvider<Duration>((ref) {
+  final player = ref.watch(quranAudioServiceProvider).player;
+  return player.positionStream;
+});
+
+final quranAudioDurationProvider = StreamProvider<Duration?>((ref) {
+  final player = ref.watch(quranAudioServiceProvider).player;
+  return player.durationStream;
+});
+
+final quranAudioPlayerStateProvider = StreamProvider<PlayerState>((ref) {
+  final player = ref.watch(quranAudioServiceProvider).player;
+  return player.playerStateStream;
+});
+
+final quranAudioProgressProvider = Provider<double>((ref) {
+  final position = ref.watch(quranAudioPositionProvider).value ?? Duration.zero;
+  final duration = ref.watch(quranAudioDurationProvider).value ?? Duration.zero;
+
+  if (duration.inMilliseconds <= 0) {
+    return 0;
+  }
+
+  final progress = position.inMilliseconds / duration.inMilliseconds;
+  return progress.clamp(0, 1);
 });
 
 final readingProgressSyncServiceProvider = Provider<ReadingProgressSyncService>(
