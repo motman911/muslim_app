@@ -89,9 +89,9 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
           IconButton(
             onPressed: ayahs == null || ayahs.isEmpty
                 ? null
-                : () => _openAyahJumpSheet(context, ayahs),
+                : () => _openPageJumpSheet(context, ayahs),
             icon: const Icon(Icons.low_priority_rounded),
-            tooltip: l10n.tr('jumpToAyah'),
+            tooltip: l10n.tr('jumpToPage'),
           ),
         ],
       ),
@@ -100,6 +100,23 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
           if (ayahs.isEmpty) {
             return Center(child: Text(l10n.tr('noResults')));
           }
+
+          final sortedAyahs = [...ayahs]..sort((a, b) {
+              final pageComparison = a.pageNumber.compareTo(b.pageNumber);
+              if (pageComparison != 0) {
+                return pageComparison;
+              }
+              return a.ayahNumber.compareTo(b.ayahNumber);
+            });
+
+          final pageGroups = <int, List<AyahModel>>{};
+          for (final ayah in sortedAyahs) {
+            pageGroups
+                .putIfAbsent(ayah.pageNumber, () => <AyahModel>[])
+                .add(ayah);
+          }
+
+          final orderedPages = pageGroups.keys.toList()..sort();
 
           return Column(
             children: [
@@ -119,7 +136,14 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
                       children: [
                         Chip(
                           avatar: const Icon(Icons.menu_book_rounded, size: 16),
-                          label: Text('${l10n.tr('ayah')}: ${ayahs.length}'),
+                          label:
+                              Text('${l10n.tr('ayah')}: ${sortedAyahs.length}'),
+                        ),
+                        Chip(
+                          avatar:
+                              const Icon(Icons.auto_stories_rounded, size: 16),
+                          label: Text(
+                              '${l10n.tr('page')}: ${orderedPages.length}'),
                         ),
                         Chip(
                           avatar: const Icon(Icons.percent_rounded, size: 16),
@@ -130,8 +154,9 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
                         ActionChip(
                           avatar:
                               const Icon(Icons.low_priority_rounded, size: 16),
-                          label: Text(l10n.tr('jumpToAyah')),
-                          onPressed: () => _openAyahJumpSheet(context, ayahs),
+                          label: Text(l10n.tr('jumpToPage')),
+                          onPressed: () =>
+                              _openPageJumpSheet(context, sortedAyahs),
                         ),
                       ],
                     ),
@@ -155,87 +180,117 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
                   child: ListView.builder(
                     controller: _scrollController,
                     padding: const EdgeInsets.symmetric(vertical: 8),
-                    itemCount: ayahs.length,
+                    itemCount: orderedPages.length,
                     itemBuilder: (context, index) {
-                      final ayah = ayahs[index];
+                      final pageNumber = orderedPages[index];
+                      final ayahsInPage = pageGroups[pageNumber]!;
+
                       return NoorCard(
                         margin: const EdgeInsets.fromLTRB(12, 6, 12, 6),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(16),
-                          onTap: () async {
-                            await _syncLastRead(
-                              ref,
-                              firebaseReady: firebaseReady,
-                              deviceId: deviceId,
-                              ayah: ayah,
-                            );
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.auto_stories_rounded,
+                                    size: 18),
+                                const SizedBox(width: 6),
+                                Text(
+                                  '${l10n.tr('page')} $pageNumber',
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            ...ayahsInPage.map(
+                              (ayah) => Padding(
+                                padding: const EdgeInsets.only(bottom: 14),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(12),
+                                  onTap: () async {
+                                    await _syncLastRead(
+                                      ref,
+                                      firebaseReady: firebaseReady,
+                                      deviceId: deviceId,
+                                      ayah: ayah,
+                                    );
 
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    '${l10n.tr('markAsLastRead')}: ${l10n.tr('ayah')} ${ayah.ayahNumber}',
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            '${l10n.tr('markAsLastRead')}: ${l10n.tr('ayah')} ${ayah.ayahNumber}',
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  onLongPress: () async {
+                                    if (!firebaseReady) {
+                                      return;
+                                    }
+
+                                    await ref
+                                        .read(bookmarkSyncServiceProvider)
+                                        .addBookmark(
+                                          type: 'ayah',
+                                          surahNumber: ayah.surahNumber,
+                                          ayahNumber: ayah.ayahNumber,
+                                        );
+
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content:
+                                              Text(l10n.tr('bookmarkSaved')),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        ayah.text,
+                                        textAlign: TextAlign.right,
+                                        style: const TextStyle(
+                                          fontFamily: 'Amiri',
+                                          fontSize: 26,
+                                          height: 1.9,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Wrap(
+                                        spacing: 8,
+                                        runSpacing: 8,
+                                        children: [
+                                          Chip(
+                                            label: Text(
+                                              '${l10n.tr('ayah')} ${ayah.ayahNumber}',
+                                            ),
+                                          ),
+                                          Chip(
+                                            label: Text(
+                                              '${l10n.tr('juz')} ${ayah.juzNumber}',
+                                            ),
+                                          ),
+                                          Chip(
+                                            label: Text(
+                                              '${l10n.tr('page')} ${ayah.pageNumber}',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              );
-                            }
-                          },
-                          onLongPress: () async {
-                            if (!firebaseReady) {
-                              return;
-                            }
-
-                            await ref
-                                .read(bookmarkSyncServiceProvider)
-                                .addBookmark(
-                                  type: 'ayah',
-                                  surahNumber: ayah.surahNumber,
-                                  ayahNumber: ayah.ayahNumber,
-                                );
-
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content: Text(l10n.tr('bookmarkSaved'))),
-                              );
-                            }
-                          },
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                ayah.text,
-                                textAlign: TextAlign.right,
-                                style: const TextStyle(
-                                  fontFamily: 'Amiri',
-                                  fontSize: 26,
-                                  height: 1.9,
-                                ),
                               ),
-                              const SizedBox(height: 12),
-                              Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: [
-                                  Chip(
-                                    label: Text(
-                                      '${l10n.tr('ayah')} ${ayah.ayahNumber}',
-                                    ),
-                                  ),
-                                  Chip(
-                                    label: Text(
-                                      '${l10n.tr('juz')} ${ayah.juzNumber}',
-                                    ),
-                                  ),
-                                  Chip(
-                                    label: Text(
-                                      '${l10n.tr('page')} ${ayah.pageNumber}',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       );
                     },
@@ -256,12 +311,13 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
     );
   }
 
-  Future<void> _openAyahJumpSheet(
+  Future<void> _openPageJumpSheet(
     BuildContext context,
     List<AyahModel> ayahs,
   ) async {
     final l10n = context.l10n;
-    double selectedAyah = 1;
+    final pages = ayahs.map((item) => item.pageNumber).toSet().toList()..sort();
+    double selectedPageIndex = 0;
 
     await showModalBottomSheet<void>(
       context: context,
@@ -276,23 +332,23 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    l10n.tr('jumpToAyah'),
+                    l10n.tr('jumpToPage'),
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '${l10n.tr('ayah')} ${selectedAyah.round()} / ${ayahs.length}',
+                    '${l10n.tr('page')} ${pages[selectedPageIndex.round()]} (${selectedPageIndex.round() + 1}/${pages.length})',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   Slider(
-                    min: 1,
-                    max: ayahs.length.toDouble(),
-                    divisions: math.max(ayahs.length - 1, 1),
-                    value: selectedAyah,
-                    label: selectedAyah.round().toString(),
+                    min: 0,
+                    max: (pages.length - 1).toDouble(),
+                    divisions: math.max(pages.length - 1, 1),
+                    value: selectedPageIndex,
+                    label: pages[selectedPageIndex.round()].toString(),
                     onChanged: (value) {
                       setState(() {
-                        selectedAyah = value;
+                        selectedPageIndex = value;
                       });
                     },
                   ),
@@ -302,10 +358,10 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
                     child: FilledButton.icon(
                       onPressed: () {
                         Navigator.of(context).pop();
-                        _jumpToAyah(selectedAyah.round(), ayahs.length);
+                        _jumpToPage(selectedPageIndex.round(), pages.length);
                       },
                       icon: const Icon(Icons.arrow_downward_rounded),
-                      label: Text(l10n.tr('goToSelectedAyah')),
+                      label: Text(l10n.tr('goToSelectedPage')),
                     ),
                   ),
                 ],
@@ -317,14 +373,14 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
     );
   }
 
-  Future<void> _jumpToAyah(int ayahNumber, int totalAyahs) async {
-    if (!_scrollController.hasClients || totalAyahs <= 1) {
+  Future<void> _jumpToPage(int pageIndex, int totalPages) async {
+    if (!_scrollController.hasClients || totalPages <= 1) {
       return;
     }
 
     final maxExtent = _scrollController.position.maxScrollExtent;
-    final perAyah = maxExtent / (totalAyahs - 1);
-    final target = (perAyah * (ayahNumber - 1)).clamp(0.0, maxExtent);
+    final perPage = maxExtent / (totalPages - 1);
+    final target = (perPage * pageIndex).clamp(0.0, maxExtent);
 
     await _scrollController.animateTo(
       target,

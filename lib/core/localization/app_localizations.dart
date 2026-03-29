@@ -145,6 +145,8 @@ class AppLocalizations {
       'batchDownloadProgress': 'تقدم التنزيل الجماعي',
       'batchDownloadCompleted': 'اكتمل التنزيل الجماعي',
       'deletedOfflineFiles': 'تم حذف الملفات',
+      'jumpToPage': 'الانتقال إلى صفحة',
+      'goToSelectedPage': 'الانتقال للصفحة المحددة',
     },
     'en': {
       'appName': 'Noor',
@@ -273,6 +275,8 @@ class AppLocalizations {
       'batchDownloadProgress': 'Batch download progress',
       'batchDownloadCompleted': 'Batch download completed',
       'deletedOfflineFiles': 'Deleted files',
+      'jumpToPage': 'Jump to page',
+      'goToSelectedPage': 'Go to selected page',
     },
     'fr': {
       'appName': 'Noor',
@@ -405,6 +409,8 @@ class AppLocalizations {
       'batchDownloadProgress': 'Progression du telechargement groupe',
       'batchDownloadCompleted': 'Telechargement groupe termine',
       'deletedOfflineFiles': 'Fichiers supprimes',
+      'jumpToPage': 'Aller a la page',
+      'goToSelectedPage': 'Aller a la page selectionnee',
     },
   };
 
