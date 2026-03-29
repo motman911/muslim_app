@@ -29,6 +29,8 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
   bool _stopBatchRequested = false;
   int _batchTotal = 0;
   int _batchCompleted = 0;
+  String _batchCurrentSurahLabel = '';
+  double _batchCurrentProgress = 0;
   int _offlineCountRefreshTick = 0;
 
   @override
@@ -194,25 +196,59 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
                       '${l10n.tr('batchDownloadProgress')}: $_batchCompleted/$_batchTotal',
                     ),
                   ),
+                  if (_batchCurrentSurahLabel.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        '${l10n.tr('currentDownloadingSurah')}: $_batchCurrentSurahLabel',
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        '${l10n.tr('currentSurahProgress')}: ${(_batchCurrentProgress * 100).toStringAsFixed(0)}%',
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 8),
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        setState(() {
-                          _isBatchPaused = !_isBatchPaused;
-                        });
-                      },
-                      icon: Icon(
-                        _isBatchPaused
-                            ? Icons.play_arrow_rounded
-                            : Icons.pause_rounded,
-                      ),
-                      label: Text(
-                        _isBatchPaused
-                            ? l10n.tr('resumeBatchDownload')
-                            : l10n.tr('pauseBatchDownload'),
-                      ),
+                    child: Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              _isBatchPaused = !_isBatchPaused;
+                            });
+                          },
+                          icon: Icon(
+                            _isBatchPaused
+                                ? Icons.play_arrow_rounded
+                                : Icons.pause_rounded,
+                          ),
+                          label: Text(
+                            _isBatchPaused
+                                ? l10n.tr('resumeBatchDownload')
+                                : l10n.tr('pauseBatchDownload'),
+                          ),
+                        ),
+                        TextButton.icon(
+                          onPressed: _stopBatchRequested
+                              ? null
+                              : () {
+                                  setState(() {
+                                    _stopBatchRequested = true;
+                                    _isBatchPaused = false;
+                                  });
+                                },
+                          icon: const Icon(Icons.stop_circle_outlined),
+                          label: Text(l10n.tr('cancelBatchDownload')),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -437,9 +473,12 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
       _stopBatchRequested = false;
       _batchTotal = surahs.length;
       _batchCompleted = 0;
+      _batchCurrentSurahLabel = '';
+      _batchCurrentProgress = 0;
     });
 
     var failed = 0;
+    var wasCanceled = false;
 
     for (final surah in surahs) {
       while (_isBatchPaused && mounted) {
@@ -447,6 +486,7 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
       }
 
       if (_stopBatchRequested || !mounted) {
+        wasCanceled = _stopBatchRequested;
         break;
       }
 
@@ -454,6 +494,8 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
       setState(() {
         _downloadingKeys.add(key);
         _downloadProgress[key] = 0;
+        _batchCurrentSurahLabel = surah.arabicName;
+        _batchCurrentProgress = 0;
       });
 
       try {
@@ -470,6 +512,7 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
             }
             setState(() {
               _downloadProgress[key] = value;
+              _batchCurrentProgress = value;
             });
           },
         );
@@ -497,13 +540,18 @@ class _QuranRecitationsPageState extends ConsumerState<QuranRecitationsPage> {
     setState(() {
       _isBatchDownloading = false;
       _isBatchPaused = false;
+      _stopBatchRequested = false;
+      _batchCurrentSurahLabel = '';
+      _batchCurrentProgress = 0;
       _offlineCountRefreshTick += 1;
     });
 
     messenger.showSnackBar(
       SnackBar(
         content: Text(
-          '${l10n.tr('batchDownloadCompleted')}: $successCount/${surahs.length}',
+          wasCanceled
+              ? '${l10n.tr('batchDownloadCanceled')}: $successCount/${surahs.length}'
+              : '${l10n.tr('batchDownloadCompleted')}: $successCount/${surahs.length}',
         ),
       ),
     );

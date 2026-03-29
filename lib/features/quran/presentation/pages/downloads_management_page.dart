@@ -21,6 +21,7 @@ class DownloadsManagementPage extends StatefulWidget {
 class _DownloadsManagementPageState extends State<DownloadsManagementPage> {
   late String _selectedReciterId;
   final DownloadService _downloadService = DownloadService();
+  String _searchText = '';
   int _refreshTick = 0;
 
   @override
@@ -67,6 +68,21 @@ class _DownloadsManagementPageState extends State<DownloadsManagementPage> {
             ),
           ),
           const SizedBox(height: 12),
+          NoorCard(
+            margin: EdgeInsets.zero,
+            child: TextField(
+              onChanged: (value) {
+                setState(() {
+                  _searchText = value.trim();
+                });
+              },
+              decoration: InputDecoration(
+                prefixIcon: const Icon(Icons.search_rounded),
+                hintText: l10n.tr('searchDownloadedFiles'),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
           FutureBuilder<List<DownloadedAudioFile>>(
             key: ValueKey('downloads_$_selectedReciterId$_refreshTick'),
             future: _downloadService.listReciterDownloads(_selectedReciterId),
@@ -76,15 +92,20 @@ class _DownloadsManagementPageState extends State<DownloadsManagementPage> {
               }
 
               final files = snapshot.data ?? <DownloadedAudioFile>[];
-              if (files.isEmpty) {
+              final filteredFiles = _filterFiles(files);
+              if (filteredFiles.isEmpty) {
                 return NoorCard(
                   margin: EdgeInsets.zero,
-                  child: Text(l10n.tr('noOfflineFiles')),
+                  child: Text(
+                    files.isEmpty
+                        ? l10n.tr('noOfflineFiles')
+                        : l10n.tr('noMatchingDownloads'),
+                  ),
                 );
               }
 
-              final totalSize =
-                  files.fold<int>(0, (sum, item) => sum + item.sizeBytes);
+              final totalSize = filteredFiles.fold<int>(
+                  0, (sum, item) => sum + item.sizeBytes);
 
               return Column(
                 children: [
@@ -95,7 +116,7 @@ class _DownloadsManagementPageState extends State<DownloadsManagementPage> {
                       children: [
                         Expanded(
                           child: Text(
-                            '${l10n.tr('offlineFilesCount')}: ${files.length}',
+                            '${l10n.tr('offlineFilesCount')}: ${filteredFiles.length}',
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                         ),
@@ -107,7 +128,7 @@ class _DownloadsManagementPageState extends State<DownloadsManagementPage> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  ...files.map(
+                  ...filteredFiles.map(
                     (item) => NoorCard(
                       margin: const EdgeInsets.only(bottom: 10),
                       child: ListTile(
@@ -172,5 +193,19 @@ class _DownloadsManagementPageState extends State<DownloadsManagementPage> {
   String _formatDate(DateTime dateTime) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     return '${dateTime.year}-${twoDigits(dateTime.month)}-${twoDigits(dateTime.day)}';
+  }
+
+  List<DownloadedAudioFile> _filterFiles(List<DownloadedAudioFile> files) {
+    if (_searchText.isEmpty) {
+      return files;
+    }
+
+    final needle = _searchText.toLowerCase();
+    return files.where((item) {
+      return item.surahId.toString().contains(needle) ||
+          '${context.l10n.tr('surah')} ${item.surahId}'
+              .toLowerCase()
+              .contains(needle);
+    }).toList();
   }
 }
