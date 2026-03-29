@@ -13,7 +13,8 @@ class PrayerHeroCard extends StatefulWidget {
   State<PrayerHeroCard> createState() => _PrayerHeroCardState();
 }
 
-class _PrayerHeroCardState extends State<PrayerHeroCard> {
+class _PrayerHeroCardState extends State<PrayerHeroCard>
+    with WidgetsBindingObserver {
   static const List<_PrayerSlot> _slots = [
     _PrayerSlot(name: 'الفجر', hour: 5, minute: 0),
     _PrayerSlot(name: 'الظهر', hour: 12, minute: 20),
@@ -22,13 +23,19 @@ class _PrayerHeroCardState extends State<PrayerHeroCard> {
     _PrayerSlot(name: 'العشاء', hour: 20, minute: 0),
   ];
 
-  late Timer _timer;
+  Timer? _timer;
   late DateTime _now;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _now = DateTime.now();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted) {
         return;
@@ -40,8 +47,25 @@ class _PrayerHeroCardState extends State<PrayerHeroCard> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _now = DateTime.now();
+      _startTimer();
+      return;
+    }
+
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached ||
+        state == AppLifecycleState.hidden) {
+      _timer?.cancel();
+    }
+  }
+
+  @override
   void dispose() {
-    _timer.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    _timer?.cancel();
     super.dispose();
   }
 
