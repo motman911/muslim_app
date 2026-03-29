@@ -38,6 +38,7 @@ dependencies:
   intl: ^0.20.2
   just_audio: ^0.10.5
   google_fonts: ^6.2.1
+  flutter_screenutil: ^5.9.3
 
   # Firebase integration
   firebase_core: ^3.15.2

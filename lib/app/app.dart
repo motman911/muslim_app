@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../core/localization/app_localizations.dart';
 import '../core/themes/app_theme.dart';
@@ -75,13 +76,20 @@ class _NoorAppState extends ConsumerState<NoorApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       builder: (context, child) {
-        final mediaQuery = MediaQuery.of(context);
-        return MediaQuery(
-          data: mediaQuery.copyWith(
-            textScaler: TextScaler.linear(textScale),
-            highContrast: highContrast,
-          ),
-          child: child ?? const SizedBox.shrink(),
+        return ScreenUtilInit(
+          designSize: const Size(390, 844),
+          minTextAdapt: true,
+          splitScreenMode: true,
+          builder: (context, _) {
+            final mediaQuery = MediaQuery.of(context);
+            return MediaQuery(
+              data: mediaQuery.copyWith(
+                textScaler: TextScaler.linear(textScale),
+                highContrast: highContrast,
+              ),
+              child: child ?? const SizedBox.shrink(),
+            );
+          },
         );
       },
       routerConfig: router,

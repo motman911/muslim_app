@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../../../../core/localization/app_localizations.dart';
@@ -74,26 +75,26 @@ class _FullPlayerPageState extends ConsumerState<FullPlayerPage> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16.r),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Center(
               child: Container(
-                width: 200,
-                height: 200,
+                width: 200.w,
+                height: 200.w,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(24.r),
                   gradient: const LinearGradient(
                     colors: [AppColors.goldPrimary, AppColors.goldLight],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                 ),
-                child: const Icon(Icons.menu_book_rounded, size: 80),
+                child: Icon(Icons.menu_book_rounded, size: 80.sp),
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
             Text(
               audioState.currentSurahName ?? 'لا يوجد تشغيل',
               textAlign: TextAlign.center,
@@ -104,14 +105,14 @@ class _FullPlayerPageState extends ConsumerState<FullPlayerPage> {
               textAlign: TextAlign.center,
               style: AppTextStyles.caption,
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24.h),
             SliderTheme(
               data: SliderThemeData(
                 activeTrackColor: AppColors.goldPrimary,
                 inactiveTrackColor: AppColors.darkBgElevated,
                 thumbColor: AppColors.goldPrimary,
-                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-                trackHeight: 3,
+                thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.r),
+                trackHeight: 3.h,
                 overlayShape: SliderComponentShape.noOverlay,
               ),
               child: Slider(
@@ -130,13 +131,13 @@ class _FullPlayerPageState extends ConsumerState<FullPlayerPage> {
                     : null,
               ),
             ),
-            const SizedBox(height: 6),
+            SizedBox(height: 6.h),
             Text(
               '${_format(position)} / ${_format(duration)}',
               textAlign: TextAlign.center,
               style: AppTextStyles.tiny,
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24.h),
             AudioControls(
               isPlaying: isActuallyPlaying,
               isShuffleEnabled: shuffleEnabled,
@@ -184,17 +185,17 @@ class _FullPlayerPageState extends ConsumerState<FullPlayerPage> {
                     }
                   : null,
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
             NoorCard(
               margin: EdgeInsets.zero,
               child: Text(
                 '${l10n.tr('playbackSpeed')}: ${ref.read(quranAudioServiceProvider).player.speed.toStringAsFixed(1)}x  •  ${l10n.tr('sleepTimer')}: ${_sleepRemainingSeconds == 0 ? l10n.tr('disabled') : _formatSleepRemaining(_sleepRemainingSeconds)}',
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: 8.w,
+              runSpacing: 8.h,
               children: [
                 OutlinedButton(
                   onPressed: () => _startSleepTimer(minutes: 10),

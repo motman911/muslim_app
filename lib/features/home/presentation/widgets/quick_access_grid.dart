@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
@@ -41,10 +42,10 @@ class QuickAccessGrid extends StatelessWidget {
       shrinkWrap: true,
       itemCount: _items.length,
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        mainAxisSpacing: 10,
-        crossAxisSpacing: 10,
+        mainAxisSpacing: 10.h,
+        crossAxisSpacing: 10.w,
         childAspectRatio: 1.6,
       ),
       itemBuilder: (context, index) {
@@ -94,14 +95,14 @@ class _QuickTileState extends State<_QuickTile> {
         child: Container(
           decoration: BoxDecoration(
             color: AppColors.darkBgSecondary,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(16.r),
             border: Border.all(color: AppColors.border),
           ),
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.all(12.r),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(widget.item.icon, size: 28, color: AppColors.goldPrimary),
+              Icon(widget.item.icon, size: 28.sp, color: AppColors.goldPrimary),
               const Spacer(),
               Text(widget.item.label, style: AppTextStyles.bodyMedium),
               Text(widget.item.sub, style: AppTextStyles.tiny),

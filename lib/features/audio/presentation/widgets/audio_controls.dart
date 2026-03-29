@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AudioControls extends StatelessWidget {
   const AudioControls({
@@ -39,18 +40,18 @@ class AudioControls extends StatelessWidget {
           onPressed: onPrevious,
           icon: const Icon(Icons.skip_previous_rounded),
         ),
-        const SizedBox(width: 4),
+        SizedBox(width: 4.w),
         CircleAvatar(
-          radius: 28,
+          radius: 28.r,
           child: IconButton(
             onPressed: onPlayPause,
             icon: Icon(
               isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-              size: 30,
+              size: 30.sp,
             ),
           ),
         ),
-        const SizedBox(width: 4),
+        SizedBox(width: 4.w),
         IconButton(
           onPressed: onNext,
           icon: const Icon(Icons.skip_next_rounded),
