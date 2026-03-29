@@ -165,7 +165,45 @@ class QuranAudioController extends StateNotifier<QuranAudioState> {
 
   Future<void> stop() async {
     await _audioService.stop();
-    state = state.copyWith(isPlaying: false, clearError: true);
+    state = const QuranAudioState(
+      currentSurahId: null,
+      currentSurahName: null,
+      isPlaying: false,
+      isLoading: false,
+      currentReciterId: 'ar.alafasy',
+    );
+  }
+
+  Future<void> toggleQuick({
+    required int surahId,
+    required String surahName,
+  }) async {
+    if (state.currentSurahId == surahId && state.isPlaying) {
+      await _audioService.pause();
+      state = state.copyWith(isPlaying: false, clearError: true);
+      return;
+    }
+
+    try {
+      state = state.copyWith(
+        isLoading: true,
+        currentSurahId: surahId,
+        currentSurahName: surahName,
+        clearError: true,
+      );
+      await _audioService.playSurah(
+        surahId: surahId,
+        reciter: state.currentReciterId,
+      );
+      state =
+          state.copyWith(isPlaying: true, isLoading: false, clearError: true);
+    } catch (_) {
+      state = state.copyWith(
+        isPlaying: false,
+        isLoading: false,
+        errorMessage: 'Failed to play recitation',
+      );
+    }
   }
 }
 

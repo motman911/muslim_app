@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/constants/color_scheme.dart';
 import '../../core/localization/app_localizations.dart';
+import '../../features/quran/presentation/providers/quran_providers.dart';
+import '../../features/audio/presentation/widgets/mini_audio_player.dart';
 import '../../shared/widgets/bottom_nav_bar.dart';
 
-class MainShellScaffold extends StatelessWidget {
+class MainShellScaffold extends ConsumerWidget {
   const MainShellScaffold({super.key, required this.child});
 
   final Widget child;
@@ -29,12 +32,13 @@ class MainShellScaffold extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final location = GoRouterState.of(context).uri.toString();
     final currentIndex =
         _tabs.indexWhere((tab) => location.startsWith(tab.path));
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final audioState = ref.watch(quranAudioControllerProvider);
 
     return Scaffold(
       extendBody: true,
@@ -50,23 +54,54 @@ class MainShellScaffold extends StatelessWidget {
         ),
         child: SafeArea(child: child),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.zero,
-        child: BottomNavBar(
-          items: _tabs
-              .map(
-                (tab) => BottomNavItem(
-                  path: tab.path,
-                  icon: tab.icon,
-                  label: l10n.tr(tab.labelKey),
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (audioState.currentSurahId != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+              child: GestureDetector(
+                onTap: () => context.push('/audio/player'),
+                child: MiniAudioPlayer(
+                  title: audioState.currentSurahName ??
+                      '${l10n.tr('surah')} ${audioState.currentSurahId}',
+                  subtitle: l10n.tr('nowPlaying'),
+                  isPlaying: audioState.isPlaying,
+                  progress: 0,
+                  onPlayPause: () {
+                    if (audioState.currentSurahId == null) {
+                      return;
+                    }
+                    final surahId = audioState.currentSurahId!;
+                    final surahName = audioState.currentSurahName ??
+                        '${l10n.tr('surah')} $surahId';
+                    ref.read(quranAudioControllerProvider.notifier).toggleQuick(
+                          surahId: surahId,
+                          surahName: surahName,
+                        );
+                  },
+                  onClose: () {
+                    ref.read(quranAudioControllerProvider.notifier).stop();
+                  },
                 ),
-              )
-              .toList(),
-          currentIndex: currentIndex < 0 ? 0 : currentIndex,
-          onTap: (index) {
-            context.go(_tabs[index].path);
-          },
-        ),
+              ),
+            ),
+          BottomNavBar(
+            items: _tabs
+                .map(
+                  (tab) => BottomNavItem(
+                    path: tab.path,
+                    icon: tab.icon,
+                    label: l10n.tr(tab.labelKey),
+                  ),
+                )
+                .toList(),
+            currentIndex: currentIndex < 0 ? 0 : currentIndex,
+            onTap: (index) {
+              context.go(_tabs[index].path);
+            },
+          ),
+        ],
       ),
     );
   }

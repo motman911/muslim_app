@@ -8,6 +8,9 @@ import '../../../../shared/providers/firebase_providers.dart';
 import '../../../../shared/widgets/noor_card.dart';
 import '../../data/models/ayah_model.dart';
 import '../providers/quran_providers.dart';
+import '../widgets/ayah_action_sheet.dart';
+import '../widgets/ayah_widget.dart';
+import '../widgets/quran_settings_sheet.dart';
 
 class SurahReadingPage extends ConsumerStatefulWidget {
   const SurahReadingPage({
@@ -24,6 +27,7 @@ class SurahReadingPage extends ConsumerStatefulWidget {
 class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
   final ScrollController _scrollController = ScrollController();
   double _scrollProgress = 0.0;
+  int? _highlightedAyah;
 
   @override
   void initState() {
@@ -86,6 +90,11 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
       appBar: AppBar(
         title: Text(surahName),
         actions: [
+          IconButton(
+            onPressed: () => showQuranSettingsSheet(context, ref),
+            icon: const Icon(Icons.tune_rounded),
+            tooltip: l10n.tr('readingSettings'),
+          ),
           IconButton(
             onPressed: ayahs == null || ayahs.isEmpty
                 ? null
@@ -206,9 +215,14 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
                             ...ayahsInPage.map(
                               (ayah) => Padding(
                                 padding: const EdgeInsets.only(bottom: 14),
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(12),
+                                child: AyahWidget(
+                                  ayah: ayah,
+                                  highlight:
+                                      _highlightedAyah == ayah.ayahNumber,
                                   onTap: () async {
+                                    setState(() {
+                                      _highlightedAyah = ayah.ayahNumber;
+                                    });
                                     await _syncLastRead(
                                       ref,
                                       firebaseReady: firebaseReady,
@@ -228,65 +242,23 @@ class _SurahReadingPageState extends ConsumerState<SurahReadingPage> {
                                     }
                                   },
                                   onLongPress: () async {
-                                    if (!firebaseReady) {
-                                      return;
-                                    }
-
-                                    await ref
-                                        .read(bookmarkSyncServiceProvider)
-                                        .addBookmark(
-                                          type: 'ayah',
-                                          surahNumber: ayah.surahNumber,
-                                          ayahNumber: ayah.ayahNumber,
-                                        );
-
-                                    if (context.mounted) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content:
-                                              Text(l10n.tr('bookmarkSaved')),
-                                        ),
-                                      );
-                                    }
+                                    await showAyahActionSheet(
+                                      context,
+                                      ayah: ayah,
+                                      onBookmark: () async {
+                                        if (!firebaseReady) {
+                                          return;
+                                        }
+                                        await ref
+                                            .read(bookmarkSyncServiceProvider)
+                                            .addBookmark(
+                                              type: 'ayah',
+                                              surahNumber: ayah.surahNumber,
+                                              ayahNumber: ayah.ayahNumber,
+                                            );
+                                      },
+                                    );
                                   },
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        ayah.text,
-                                        textAlign: TextAlign.right,
-                                        style: const TextStyle(
-                                          fontFamily: 'Amiri',
-                                          fontSize: 26,
-                                          height: 1.9,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Wrap(
-                                        spacing: 8,
-                                        runSpacing: 8,
-                                        children: [
-                                          Chip(
-                                            label: Text(
-                                              '${l10n.tr('ayah')} ${ayah.ayahNumber}',
-                                            ),
-                                          ),
-                                          Chip(
-                                            label: Text(
-                                              '${l10n.tr('juz')} ${ayah.juzNumber}',
-                                            ),
-                                          ),
-                                          Chip(
-                                            label: Text(
-                                              '${l10n.tr('page')} ${ayah.pageNumber}',
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
                                 ),
                               ),
                             ),

@@ -7,7 +7,7 @@ import '../../../../core/localization/app_localizations.dart';
 import '../../../../shared/providers/firebase_providers.dart';
 import '../../../../shared/widgets/noor_card.dart';
 import '../providers/quran_providers.dart';
-import '../widgets/surah_tile.dart';
+import '../widgets/surah_card.dart';
 
 class QuranHomePage extends ConsumerWidget {
   const QuranHomePage({super.key});
@@ -153,7 +153,7 @@ class QuranHomePage extends ConsumerWidget {
                       final surah = surahs[index];
                       final isCurrent = audioState.currentSurahId == surah.id;
 
-                      return SurahTile(
+                      return SurahCard(
                         surah: surah,
                         onTap: () async {
                           if (firebaseReady && deviceId != null) {
