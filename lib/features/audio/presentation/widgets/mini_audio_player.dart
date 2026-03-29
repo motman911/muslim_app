@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/theme/app_colors.dart';
 
@@ -25,17 +26,19 @@ class MiniAudioPlayer extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.darkBgSecondary.withValues(alpha: 0.95),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(14.r),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
+            dense: true,
+            contentPadding: EdgeInsets.symmetric(horizontal: 12.w),
             leading: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(8.r),
               child: Container(
-                width: 40,
-                height: 40,
+                width: 40.w,
+                height: 40.w,
                 color: AppColors.darkSurface,
                 child: const Icon(Icons.music_note_rounded),
               ),
@@ -60,7 +63,7 @@ class MiniAudioPlayer extends StatelessWidget {
             ),
           ),
           LinearProgressIndicator(
-            minHeight: 2,
+            minHeight: 2.h,
             value: progress.clamp(0, 1),
             color: AppColors.goldPrimary,
             backgroundColor: AppColors.darkBgElevated,

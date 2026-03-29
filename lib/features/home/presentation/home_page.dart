@@ -23,28 +23,28 @@ class HomePage extends StatelessWidget {
           SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16).w,
-              child: PrayerHeroCard(),
+              child: const PrayerHeroCard(),
             ),
           ),
           SliverToBoxAdapter(child: SizedBox(height: 16.h)),
           SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16).w,
-              child: AyahOfDayCard(),
+              child: const AyahOfDayCard(),
             ),
           ),
           SliverToBoxAdapter(child: SizedBox(height: 16.h)),
           SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16).w,
-              child: QuickAccessGrid(),
+              child: const QuickAccessGrid(),
             ),
           ),
           SliverToBoxAdapter(child: SizedBox(height: 16.h)),
           SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16).w,
-              child: ContinueReadingCard(),
+              child: const ContinueReadingCard(),
             ),
           ),
           SliverToBoxAdapter(

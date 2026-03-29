@@ -58,34 +58,51 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       body: ListView(
         padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 24.h),
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: _SettingStatCard(
-                  label: l10n.tr('textSize'),
-                  value: textScale.toStringAsFixed(2),
-                  icon: Icons.text_fields_rounded,
-                ),
-              ),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: _SettingStatCard(
-                  label: l10n.tr('lineHeight'),
-                  value: lineHeight.toStringAsFixed(1),
-                  icon: Icons.format_line_spacing_rounded,
-                ),
-              ),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: _SettingStatCard(
-                  label: l10n.tr('highContrast'),
-                  value: highContrast
-                      ? l10n.tr('highContrastEnabled')
-                      : l10n.tr('highContrastDisabled'),
-                  icon: Icons.contrast_rounded,
-                ),
-              ),
-            ],
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final spacing = 8.w;
+              final cardWidth = (constraints.maxWidth - spacing * 2) / 3;
+              final compact = cardWidth < 110.w;
+
+              return Wrap(
+                spacing: spacing,
+                runSpacing: 8.h,
+                children: [
+                  SizedBox(
+                    width: compact
+                        ? (constraints.maxWidth - spacing) / 2
+                        : cardWidth,
+                    child: _SettingStatCard(
+                      label: l10n.tr('textSize'),
+                      value: textScale.toStringAsFixed(2),
+                      icon: Icons.text_fields_rounded,
+                    ),
+                  ),
+                  SizedBox(
+                    width: compact
+                        ? (constraints.maxWidth - spacing) / 2
+                        : cardWidth,
+                    child: _SettingStatCard(
+                      label: l10n.tr('lineHeight'),
+                      value: lineHeight.toStringAsFixed(1),
+                      icon: Icons.format_line_spacing_rounded,
+                    ),
+                  ),
+                  SizedBox(
+                    width: compact
+                        ? (constraints.maxWidth - spacing) / 2
+                        : cardWidth,
+                    child: _SettingStatCard(
+                      label: l10n.tr('highContrast'),
+                      value: highContrast
+                          ? l10n.tr('highContrastEnabled')
+                          : l10n.tr('highContrastDisabled'),
+                      icon: Icons.contrast_rounded,
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
           SizedBox(height: 16.h),
           _sectionTitle(context, l10n.tr('account')),

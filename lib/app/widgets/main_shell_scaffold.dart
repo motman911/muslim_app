@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/constants/color_scheme.dart';
@@ -60,7 +61,7 @@ class MainShellScaffold extends ConsumerWidget {
         children: [
           if (audioState.currentSurahId != null)
             Padding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+              padding: EdgeInsets.fromLTRB(12.w, 0, 12.w, 8.h),
               child: GestureDetector(
                 onTap: () => context.push('/audio/player'),
                 child: MiniAudioPlayer(
